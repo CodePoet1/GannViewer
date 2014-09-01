@@ -1,2 +1,4 @@
 Story 1 - TonyO
-As an analyst I want to
+As <an analyst> I want to load upto date prices of all ftse100 companies
+
+
