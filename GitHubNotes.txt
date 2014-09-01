@@ -1,0 +1,23 @@
+http://git-scm.com/book/en/Getting-Started
+
+https://github.com/CodePoet1/GannViewer.git
+
+1. git init 
+   intialise git for a directory
+
+2. git clone https://github.com/CodePoet1/GannViewer.git
+   copies a clone to a new directory GannViewer and generates a .git file in it
+
+2. git add FileName
+   adds file to be watched by git
+
+3. git commit -m "message for update"
+   generates a message in history file
+
+4. git remote add origin https://github.com/CodePoet1/GannViewer.git
+   pre-sets git to send to correct place
+
+5. git push origin master
+   actually sends file updates
+
+6. git clone
