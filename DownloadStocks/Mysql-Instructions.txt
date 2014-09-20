@@ -1,0 +1,23 @@
+1. Install mysql on server using "apt-get install mysql-server'
+2. During install, set root password to 'monty123'
+3. Logon as root to create a new user; "mysql -uroot -p" (when prompted for password type 'monty123')
+4. Create user by typing "create user 'tonyo'@'localhost' identified by 'monty123' "
+
+
+Queries;
+mysql> select min(stock_prices.low), stock_prices.date_price, stock_prices.ticker_name, stock_ticker.ticker_name, stock_ticker.description from stock_prices inner join stock_ticker on stock_prices.ticker_name = stock_ticker.id and stock_ticker.id=2;
+
+Will return->
+
+min(stock_prices.low)  date_price  ticker_name  ticker_name  description
+              1974.10  2013-05-01            2  %5EFTSE      FTSE100 UK
+
+
+
+Queries;
+mysql> select max(stock_prices.high), stock_prices.date_price, stock_prices.ticker_name, stock_ticker.ticker_name, stock_ticker.description from stock_prices inner join stock_ticker on stock_prices.ticker_name = stock_ticker.id and stock_ticker.id=2;
+
+Will return->
+
+min(stock_prices.low)  date_price  ticker_name  ticker_name  description
+              6950.60  2013-05-01            2  %5EFTSE      FTSE100 UK
