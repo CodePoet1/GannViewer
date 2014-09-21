@@ -133,7 +133,6 @@ sub OpenDatabase{
 	or die "table gann_level_type error: $DBI::errstr\n";
     print("created\n");
 
-
 }
 
 print "\n\n";
