@@ -102,6 +102,38 @@ sub OpenDatabase{
 
     print("inserted\n");
 
+#10. Create table gann_level_types
+    print "Creating table gann_levels_types -> ";
+    $dbh->do("create table gann_levels_types( \
+              id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+              description VARCHAR(255) NOT NULL)
+            ")
+	or die "table creation error: $DBI::errstr\n";
+    print("created\n");
+
+#11. Insert data into gann_level_types
+    print "Inserting data into gann_level_types -> ";
+    $dbh->do("INSERT INTO gann_levels_types (description) \
+             VALUES('G1 = 50%'), \
+                   ('G2 = 50% of H-l'), \
+                   ('All time low'), \
+                   ('All time high') \ 
+             ")
+	or die "table insertion error:  $DBI::errstr\n";
+    print ("inserted\n");
+
+#12. Create table gann_levels
+    print "Creating table gann_leves -> ";
+    $dbh->do
+	("create table gann_levels( \
+          id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+          ticker_name INT(10) UNSIGNED, \
+          gann_level_type INT(3) UNSIGNED, \
+          price DECIMAL(9,2))")
+	or die "table gann_level_type error: $DBI::errstr\n";
+    print("created\n");
+
+
 }
 
 print "\n\n";
