@@ -26,6 +26,10 @@
 #                 -> returned "6.05"                                           #
 #                 sudo perl -MCPAN -e 'install Bundle::DBI'                    #
 #                 perl -MDBI -le "print(DBI->VERSION)"                         #
+#                 -> returned "1.633"                                          #
+#                 sudo perl -MCPAN -e 'install DateTime'                       #
+#                 perl -MDateTime -le "print(MDateTime->VERSION)"              #
+#                 -> returned "1.18"                                           #
 ################################################################################
 
 
@@ -37,7 +41,6 @@ use warnings;
 use LWP::Simple;
 use DBI;
 use DateTime;
-use GD;
 
 sub OpenDatabase{
     my $host = "localhost";
@@ -133,37 +136,6 @@ sub OpenDatabase{
 		or die "SQL Error: $DBI::errstr\n";
 	}
 	close(DOWNLOAD_FILE);
-
-	my $im = new GD::Image(100,100);
-
-        # allocate some colors
-        my $white = $im->colorAllocate(255,255,255);
-        my $black = $im->colorAllocate(0,0,0);       
-        my $red = $im->colorAllocate(255,0,0);      
-        my $blue = $im->colorAllocate(0,0,255);
-
-        # make the background transparent and interlaced
-        $im->transparent($white);
-        $im->interlaced('true');
-
-        # Put a black frame around the picture
-        $im->rectangle(0,0,99,99,$black);
-
-        # Draw a blue oval
-        $im->arc(50,50,95,75,0,360,$blue);
-
-        # And fill it with red
-        $im->fill(50,50,$red);
-
-
-	open(PICTURE, ">picture.png") or die("Cannot open file for writing");
-
-        # Make sure we are writing to a binary stream
-	binmode PICTURE;
-
-        # Convert the image to PNG and print it to the file PICTURE
-	print PICTURE $im->png;
-	close PICTURE;
 
     }
 }

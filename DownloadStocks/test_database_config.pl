@@ -15,7 +15,6 @@ use warnings;
 use LWP::Simple;
 use DBI;
 use DateTime;
-use GD;
 
 sub OpenDatabase{
     my $host = "localhost";
