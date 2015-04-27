@@ -83,12 +83,13 @@ sub OpenDatabase{
     $rows_count = $sth_ticker_list->rows;
     print "Number of stocks in database is -> " . $rows_count . "\n";
 
+
     my $start_Day    = 1;
     my $start_Month  = 1;
-    my $start_Year   = 1990;
-    my $finish_Day   = 1;
-    my $finish_Month = 5;
-    my $finish_Year  = 2013;
+    my $start_Year   = 1970;
+    my $finish_Day   = 30;
+    my $finish_Month = 12;
+    my $finish_Year  = 2015;
     my $outfile = "tony.csv";
     
     while(@row = $sth_ticker_list->fetchrow_array){
@@ -98,8 +99,6 @@ sub OpenDatabase{
 	print "id   -> " . $ticker_id . "\n";
 	print "name -> ". $ticker_name . "\n";
 	print "desc -> ". $row[2] . "\n";
-	#$ticker_name = $row[1];
-
 
 	print "Yahoo_url -> " . $yahoo_url . "\n";
 	print "ticker    -> " . $ticker_name . "\n";
@@ -107,12 +106,9 @@ sub OpenDatabase{
 	getYahooData($yahoo_url,$ticker_name,$start_Day,$start_Month,$start_Year,$finish_Day,$finish_Month,$finish_Year,$outfile);
 
 	open(DOWNLOAD_FILE,$outfile);
-	#my $tmp1 = <DOWNLOAD_FILE>;
 	my $tmp1 = <DOWNLOAD_FILE>;
 	my $lines = 0;
 	print "1st line -> ".@_."\n";
-	#my $input_line = <DOWNLOAD_FILE>;
-	#print "2nd line -> ".$input_line."\n";
 	while (<DOWNLOAD_FILE>){
 	    my @line_array = split(/,/);
 	

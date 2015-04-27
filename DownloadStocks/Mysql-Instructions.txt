@@ -4,6 +4,7 @@
 4. Create user by typing "create user 'tonyo'@'localhost' identified by 'monty123' "
 
 
+==========================================================================================================================
 Queries;
 mysql> select min(stock_prices.low), stock_prices.date_price, stock_prices.ticker_name, stock_ticker.ticker_name, stock_ticker.description from stock_prices inner join stock_ticker on stock_prices.ticker_name = stock_ticker.id and stock_ticker.id=2;
 
@@ -13,7 +14,7 @@ min(stock_prices.low)  date_price  ticker_name  ticker_name  description
               1974.10  2013-05-01            2  %5EFTSE      FTSE100 UK
 
 
-
+==========================================================================================================================
 Queries;
 mysql> select max(stock_prices.high), stock_prices.date_price, stock_prices.ticker_name, stock_ticker.ticker_name, stock_ticker.description from stock_prices inner join stock_ticker on stock_prices.ticker_name = stock_ticker.id and stock_ticker.id=2;
 
@@ -21,3 +22,33 @@ Will return->
 
 min(stock_prices.low)  date_price  ticker_name  ticker_name  description
               6950.60  2013-05-01            2  %5EFTSE      FTSE100 UK
+
+==========================================================================================================================
+Queries;
+mysql> select count(*) from stock_prices;
+
+will return->
+count(*)
+28033
+
+==========================================================================================================================
+Queries
+mysql> select count(*) from stock_prices inner join stock_ticker on stock_prices.ticker_name = stock_ticker.id and stock_ticker.id = 1;
+
+will return->
+count(*)
+6079
+
+==========================================================================================================================
+Queries
+mysql> select ticker_name, count(*) from stock_prices group by ticker_name;
+
+will return->
+ticker_name count(*)
+          1    6079
+          2    6088
+          3    5880
+          4    3914
+          5    6072
+
+==========================================================================================================================
