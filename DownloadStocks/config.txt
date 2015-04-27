@@ -1,0 +1,14 @@
+version 1.0.a
+created 20/8/2013
+updated 21/8/2013
+author TonyO
+http://ichart.finance.yahoo.com/table.csv?s=
+yahoo-ticker, out-file
+BP.L,stock/bp_1.csv
+%5EFTSE,index/ftse100.csv
+BT,stock/bt.csv
+ARM.L,stock/arm.csv
+AV.L,stock/aviva.csv
+AAL.L,stock/AngloAmerican.csv
+AVM.L,stock/AVocetMining.csv
+
