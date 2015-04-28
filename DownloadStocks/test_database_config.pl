@@ -32,8 +32,7 @@ sub OpenDatabase{
 #2. delete database "GannSelector" if it exists
     print "Deleting any instance of database GannSelector -> ";
     #my $sql_command = "drop database ",$database;
-    $dbh->do("drop database $database")
-	or die "Connection error: $DBI::errstr\n";
+    $dbh->do("drop database $database");
     print "deleted\n";
     
 #3. Create new instance of database "GannSelector"

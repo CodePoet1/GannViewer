@@ -26,7 +26,7 @@
 #                 -> returned "6.05"                                           #
 #                 sudo perl -MCPAN -e 'install Bundle::DBI'                    #
 #                 perl -MDBI -le "print(DBI->VERSION)"                         #
-#                 -> returned "1.633"                                          #
+# (added 28/4/15) -> returned "1.633"                                          #
 #                 sudo perl -MCPAN -e 'install DateTime'                       #
 #                 perl -MDateTime -le "print(MDateTime->VERSION)"              #
 #                 -> returned "1.18"                                           #
