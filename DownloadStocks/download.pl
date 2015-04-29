@@ -90,14 +90,49 @@ sub OpenDatabase{
     my $start_Day    = 1;
     my $start_Month  = 1;
     my $start_Year   = 1970;
-    my $finish_Day   = 30;
-    my $finish_Month = 12;
+    my $finish_Day   = 1;
+    my $finish_Month = 1;
     my $finish_Year  = 2015;
     my $outfile = "tony.csv";
     
     while(@row = $sth_ticker_list->fetchrow_array){
 	my $ticker_name = $row[1];
 	my $ticker_id = $row[0];
+
+###########################################
+# Get last date for that stock in database
+###########################################
+	my $default_start_date = "1980-01-01";
+#This sql query uses 'ifnull' to force the return to a default date if it is NULL, ie there is no historic data for that stock
+	$sql_command = "select ifnull(max(stock_prices.date_price), '$default_start_date' ) from stock_prices where stock_prices.ticker_name = $ticker_id";
+#Another way of writing this is --
+	#select max(stock_prices.date_price) where ticker_name = $ticker_id order by date_price desc 1;
+
+
+	my $sth_last_date = $dbh->prepare($sql_command);
+	$sth_last_date->execute
+	    or die "SQL Error: $DBI::errstr\n";
+	my $start_date;
+#########################################################
+# Check to see if the latest date exists in the database
+# If it does, then use it, otherwise use default (this
+# then assumes that no data has been downloaded for that
+# stock)
+#########################################################
+	while(my @row = $sth_last_date->fetchrow_array){
+	    $start_date = $row[0];
+	}
+
+	if($start_date eq $default_start_date){
+	    print "Latest date is empty so using " . $default_start_date . "\n";
+	}
+	else{
+	    print "Latest date is " . $start_date . "\n";
+	}
+	
+
+
+###########################################
 	print "-------------------------\n";
 	print "id   -> " . $ticker_id . "\n";
 	print "name -> ". $ticker_name . "\n";
