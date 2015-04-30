@@ -130,6 +130,8 @@ sub OpenDatabase{
 	    print "Latest date is " . $start_date . "\n";
 	}
 	
+	my $dt = DateTime::Format::StrpTime->new("2000-01-01");
+	print "Year is " . $dt->year() . "\n";
 
 
 ###########################################
