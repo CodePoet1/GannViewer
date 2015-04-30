@@ -108,7 +108,6 @@ sub OpenDatabase{
 #Another way of writing this is --
 	#select max(stock_prices.date_price) where ticker_name = $ticker_id order by date_price desc 1;
 
-
 	my $sth_last_date = $dbh->prepare($sql_command);
 	$sth_last_date->execute
 	    or die "SQL Error: $DBI::errstr\n";
@@ -125,14 +124,28 @@ sub OpenDatabase{
 
 	if($start_date eq $default_start_date){
 	    print "Latest date is empty so using " . $default_start_date . "\n";
+	    $start_date = $default_start_date;
 	}
 	else{
 	    print "Latest date is " . $start_date . "\n";
 	}
-	
-	my $dt = DateTime::Format::StrpTime->new("2000-01-01");
-	print "Year is " . $dt->year() . "\n";
 
+	my ($y,$m,$d) = $start_date =~ /^([0-9]{4})-([0-9]{2})-([0-9]{2})\z/
+	    or die;
+	my $dt = DateTime->new(
+	    year      => $y,
+	    month     => $m,
+	    day       => $d,
+	    time_zone => 'local',
+	    ); 
+	print "Date is " . $dt->year . "-" . $dt->month . "-" . $dt->day ."\n";
+	my $newDate = $dt->add(days => 1);
+	print "Added date is " . $newDate->year . "-" . $newDate->month . "-" . $newDate->day ."\n";
+
+	$start_Day = $newDate->day;
+	$start_Month = $newDate->month;
+	$start_Year  = $newDate->year;
+	
 
 ###########################################
 	print "-------------------------\n";
@@ -143,6 +156,8 @@ sub OpenDatabase{
 	print "Yahoo_url -> " . $yahoo_url . "\n";
 	print "ticker    -> " . $ticker_name . "\n";
 	print "outfile   -> " . $outfile . "\n";
+	print "start date -> " . $start_Year . "-" . $start_Month . "-" . $start_Day . "\n";
+
 	getYahooData($yahoo_url,$ticker_name,$start_Day,$start_Month,$start_Year,$finish_Day,$finish_Month,$finish_Year,$outfile);
 
 	open(DOWNLOAD_FILE,$outfile);
@@ -207,6 +222,8 @@ sub getYahooData{
       '&e=' . $finishDay . 
       '&f=' . $finishYear . 
       '&g=d&ignore=.csv';
+
+  print "URL Query -> " . $url_yahoo_csv . "\n";
 
   my $response = $ua->get($url_yahoo_csv);
   die "Cannot get url -> $response ......", $response->status_line
