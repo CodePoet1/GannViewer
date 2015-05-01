@@ -1,4 +1,4 @@
-################################################################################
+###############################################################################
 # download.pl   tonyo  1/10/13                                                 #
 # The purpose of this script is to download the historical prices from yahoo   #
 # finance and then store them in a database.                                   #
@@ -17,6 +17,9 @@
 #    stock_prices                                                              #
 # 2. date stamp the stock_prices entry with today's date                       #
 # 3. validate data - e.g look for continuous dates in each stock price         #
+#
+# Ongoing TODO
+# 1. `/5/10`5 add -e end date from command line for debugging
 #                                                                              #
 # Notes -                                                                      #
 # 19/1/14 tonyo - before I could make perl work I had to install following;    #
@@ -251,6 +254,13 @@ sub getYahooData{
 # This is where is starts                                             #
 # Open config.txt file                                                #
 #######################################################################
+my $start_Day    = 1;
+my $start_Month  = 1;
+my $start_Year   = 1990;
+my $finish_Day   = 1;
+my $finish_Month = 5;
+my $finish_Year  = 2013;
+
 # declare the perl command line flags/options we want to allow
 my %options=();
 getopts("he:", \%options);
@@ -258,7 +268,7 @@ getopts("he:", \%options);
 # test for the existence of the options on the command line.
 
 if($options{e}) {
-    print "Using end data for price recovery as -> " . $options{e} . "\n";
+    print "Using command line end data for price download as -> " . $options{e} . "\n";
 
 }
 
@@ -277,7 +287,7 @@ foreach (@ARGV)
   print "$_\n";
 }
 
-die;
+#die;
 
 OpenDatabase();
 goto END;
@@ -337,12 +347,12 @@ while(<CONFIG_FILE>){
   print ("---------------- Next stock -------------------\n");
   chomp;
   ($ticker_name,$outfile) = split(',');
-  my $start_Day    = 1;
-  my $start_Month  = 1;
-  my $start_Year   = 1990;
-  my $finish_Day   = 1;
-  my $finish_Month = 5;
-  my $finish_Year  = 2013;
+#  my $start_Day    = 1;
+#  my $start_Month  = 1;
+#  my $start_Year   = 1990;
+#  my $finish_Day   = 1;
+#  my $finish_Month = 5;
+#  my $finish_Year  = 2013;
   if(!defined($ticker_name)){
       print("End of config file\n");
   }
