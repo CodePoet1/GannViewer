@@ -41,6 +41,9 @@ use warnings;
 use LWP::Simple;
 use DBI;
 use DateTime;
+use Getopt::Std;
+
+ 
 
 sub OpenDatabase{
     my $host = "localhost";
@@ -248,6 +251,33 @@ sub getYahooData{
 # This is where is starts                                             #
 # Open config.txt file                                                #
 #######################################################################
+# declare the perl command line flags/options we want to allow
+my %options=();
+getopts("he:", \%options);
+ 
+# test for the existence of the options on the command line.
+
+if($options{e}) {
+    print "Using end data for price recovery as -> " . $options{e} . "\n";
+
+}
+
+elsif ($options{h}){
+    print "************************************************\n";
+    print "** Help                                       **\n";
+    print "**  -h -> prints help page                    **\n";
+    print "**  -e -> end date for download of prices     **\n";
+    print "************************************************\n";
+} 
+
+# other things found on the command line
+print "Other things found on the command line:\n" if $ARGV[0];
+foreach (@ARGV)
+{
+  print "$_\n";
+}
+
+die;
 
 OpenDatabase();
 goto END;
