@@ -19,7 +19,7 @@
 # 3. validate data - e.g look for continuous dates in each stock price         #
 #
 # Ongoing TODO
-# 1. `/5/10`5 add -e end date from command line for debugging
+# 1. 2/5/2015  do a tidy-up, move sub routines to end of file 
 #                                                                              #
 # Notes -                                                                      #
 # 19/1/14 tonyo - before I could make perl work I had to install following;    #
@@ -96,9 +96,9 @@ sub OpenDatabase{
     my $start_Day    = 1;
     my $start_Month  = 1;
     my $start_Year   = 1970;
-    my $finish_Day   = 1;
-    my $finish_Month = 1;
-    my $finish_Year  = 2015;
+    my $finish_Day   = $_[2];
+    my $finish_Month = $_[1];
+    my $finish_Year  = $_[0];
     my $outfile = "tony.csv";
     
     while(@row = $sth_ticker_list->fetchrow_array){
@@ -254,30 +254,43 @@ sub getYahooData{
 # This is where is starts                                             #
 # Open config.txt file                                                #
 #######################################################################
+my $dt           = DateTime->now;
+
 my $start_Day    = 1;
 my $start_Month  = 1;
 my $start_Year   = 1990;
-my $finish_Day   = 1;
-my $finish_Month = 5;
-my $finish_Year  = 2013;
+
+#Set the finish dates to a today's date if nothing is entered into the command line
+my $finish_Day   = $dt->day;
+my $finish_Month = $dt->month;
+my $finish_Year  = $dt->year;
+
+print "Today's date is $finish_Year-$finish_Month-$finish_Day \n";
 
 # declare the perl command line flags/options we want to allow
 my %options=();
 getopts("he:", \%options);
  
-# test for the existence of the options on the command line.
 
+# test for the existence of the options on the command line.
+# If a date is put into the command line then use this value for the date
 if($options{e}) {
     print "Using command line end data for price download as -> " . $options{e} . "\n";
-
+    my ($y,$m,$d) = $options{e} =~ /^([0-9]{4})-([0-9]{2})-([0-9]{2})\z/
+	or die;
+    $finish_Day = $d;
+    $finish_Month = $m;
+    $finish_Year = $y;
 }
 
 elsif ($options{h}){
     print "************************************************\n";
-    print "** Help                                       **\n";
-    print "**  -h -> prints help page                    **\n";
-    print "**  -e -> end date for download of prices     **\n";
+    print "** GannViewer - TonyO                         **\n";
+    print "** Hoorah for the penguin                     **\n";
     print "************************************************\n";
+    print " Help                                           \n";
+    print "  -h -> prints help page                        \n";
+    print "  -e -> end date for download of prices         \n\n\n";
 } 
 
 # other things found on the command line
@@ -289,7 +302,7 @@ foreach (@ARGV)
 
 #die;
 
-OpenDatabase();
+OpenDatabase($finish_Year, $finish_Month, $finish_Day);
 goto END;
 
 my $config_file = "config.txt";
