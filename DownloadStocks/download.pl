@@ -59,8 +59,6 @@ my $finish_Day   = $dt->day;
 my $finish_Month = $dt->month;
 my $finish_Year  = $dt->year;
 
-print "Today's date is $finish_Year-$finish_Month-$finish_Day \n";
-
 # declare the perl command line flags/options we want to allow
 my %options=();
 getopts("he:", \%options);
@@ -159,8 +157,6 @@ sub OpenDatabase{
 	or die "SQL Error: $DBI::errstr\n";
 
     $rows_count = $sth_ticker_list->rows;
-    print "Number of stocks in database is -> " . $rows_count . "\n";
-
 
     my $start_Day    = 1;
     my $start_Month  = 1;
@@ -169,6 +165,7 @@ sub OpenDatabase{
     my $finish_Month = $_[1];
     my $finish_Year  = $_[0];
     my $outfile = "tony.csv";
+    my $stock_progress_counter = 0;
     
     while(@row = $sth_ticker_list->fetchrow_array){
 	my $ticker_name = $row[1];
@@ -193,6 +190,8 @@ sub OpenDatabase{
 # then assumes that no data has been downloaded for that
 # stock)
 #########################################################
+	print "\n------------------------------------------------------\n";
+
 	while(my @row = $sth_last_date->fetchrow_array){
 	    $start_date = $row[0];
 	}
@@ -202,7 +201,7 @@ sub OpenDatabase{
 	    $start_date = $default_start_date;
 	}
 	else{
-	    print "Latest date is " . $start_date . "\n";
+	    #print "Latest date is " . $start_date . "\n";
 	}
 
 	my ($y,$m,$d) = $start_date =~ /^([0-9]{4})-([0-9]{2})-([0-9]{2})\z/
@@ -213,30 +212,31 @@ sub OpenDatabase{
 	    day       => $d,
 	    time_zone => 'local',
 	    ); 
-	print "Date is " . $dt->year . "-" . $dt->month . "-" . $dt->day ."\n";
+	
 	my $newDate = $dt->add(days => 1);
-	print "Added date is " . $newDate->year . "-" . $newDate->month . "-" . $newDate->day ."\n";
 
-	$start_Day = $newDate->day;
+	print "Downloading " . ++$stock_progress_counter
+	    ." of $rows_count stocks from database, start date to download from is "
+	    .$newDate->day . "-"
+	    .$newDate->month . "-"
+	    .$newDate->year . "\n";
+
+	$start_Day   = $newDate->day;
 	$start_Month = $newDate->month;
 	$start_Year  = $newDate->year;
 	
-	print "-------------------------\n";
-	print "id   -> " . $ticker_id . "\n";
-	print "name -> ". $ticker_name . "\n";
-	print "desc -> ". $row[2] . "\n";
+	print "name -> ". $ticker_name . " ($row[2]) \n";
 
-	print "Yahoo_url -> " . $yahoo_url . "\n";
-	print "ticker    -> " . $ticker_name . "\n";
-	print "outfile   -> " . $outfile . "\n";
-	print "start date -> " . $start_Year . "-" . $start_Month . "-" . $start_Day . "\n";
-
-	getYahooData($yahoo_url,$ticker_name,$start_Day,$start_Month,$start_Year,$finish_Day,$finish_Month,$finish_Year,$outfile);
+	getYahooData($yahoo_url,
+		     $ticker_name,
+		     $start_Day, $start_Month, $start_Year,
+		     $finish_Day, $finish_Month,$finish_Year,
+		     $outfile);
 
 	open(DOWNLOAD_FILE,$outfile);
 	my $tmp1 = <DOWNLOAD_FILE>;
 	my $lines = 0;
-	print "1st line -> ".@_."\n";
+
 	while (<DOWNLOAD_FILE>){
 	    my @line_array = split(/,/);
 	
