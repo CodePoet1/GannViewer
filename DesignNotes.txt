@@ -24,7 +24,13 @@ To Do Next:
 
 
 Done
+6/5/2015
+1. Moved Download/test_database_config.pl to Config/database_initialisation.pl
+2. Created tables for yearly, monthly and daily max and min values and added to Config/database_initialisation.pl
+3. tested and could see tables in GannSelector
+
 5/5/2015
 1. Download/download.pl - function to download and update stocks_prices from 
    Yahoo Finance into database. This is a Perl routine which is instigated by 
    running "perl download.pl" with switches for debugging. See -h for help
+
