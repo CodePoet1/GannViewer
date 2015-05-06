@@ -1,0 +1,30 @@
+********************************************************************************
+*                                                                              *
+* GannViewer                                                                   *
+*                                                                              *
+* Author      - TonyO                                                          *
+* Platform    - Website/Apache/Linux                                           *
+* Software    - Perl/PHP/HTML                                                  *
+* Start date  - September 2014                                                 *
+*                                                                              *
+********************************************************************************
+
+To Do Next:
+
+6/5/2015
+1. Take stocks from database GannSelector/stock_prices and generate weekly, 
+   monthly and yearly maximum and minimums.  Create three new tables in 
+   GannSelector - stock_yearly_max_min, stock_monthly_max_min, 
+   stock_weekly_max_min
+
+
+
+
+
+
+
+Done
+5/5/2015
+1. Download/download.pl - function to download and update stocks_prices from 
+   Yahoo Finance into database. This is a Perl routine which is instigated by 
+   running "perl download.pl" with switches for debugging. See -h for help
