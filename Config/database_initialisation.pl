@@ -169,7 +169,7 @@ sub OpenDatabase{
           min DECIMAL(9,2), \
           date_last_modified DATE)")
 	or die "table creation error: $DBI::errstr\n";
-    print "created\n";
+    print "created \n";
 
 }
 
