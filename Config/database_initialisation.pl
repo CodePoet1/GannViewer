@@ -132,41 +132,80 @@ sub OpenDatabase{
 	or die "table gann_level_type error: $DBI::errstr\n";
     print("created\n");
 
-#13. Create table stock_yearly_max_min
-    print "Creating table stock_yearly_max_min -> ";
+#13. Create table stock_yearly_max
+    print "Creating table stock_yearly_max -> ";
     $dbh->do
-	("create table stock_yearly_max_min( \
+	("create table stock_yearly_max( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
           ticker_name INT(10) UNSIGNED, \
           date_price DATE, \
-          max DECIMAL(9,2), \
-          min DECIMAL(9,2), \
+          date_year_end DATE, \
+          max_price DECIMAL(9,2), \
           date_last_modified DATE)")
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
-#14. Create table stock_monthly_max_min
-    print "Creating table stock_monthly_max_min -> ";
+#14. Create table stock_yearly_min
+    print "Creating table stock_yearly_min -> ";
     $dbh->do
-	("create table stock_monthly_max_min( \
+	("create table stock_yearly_min( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
           ticker_name INT(10) UNSIGNED, \
+          date_year_end DATE, \
           date_price DATE, \
-          max DECIMAL(9,2), \
-          min DECIMAL(9,2), \
+          min_price DECIMAL(9,2), \
           date_last_modified DATE)")
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
-#15. Create table stock_yearly_max_min
-    print "Creating table stock_daily_max_min -> ";
+#15. Create table stock_monthly_max
+    print "Creating table stock_monthly_max -> ";
     $dbh->do
-	("create table stock_daily_max_min( \
+	("create table stock_monthly_max( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
           ticker_name INT(10) UNSIGNED, \
+          date_month_end DATE, \
           date_price DATE, \
-          max DECIMAL(9,2), \
-          min DECIMAL(9,2), \
+          max_price DECIMAL(9,2), \
+          date_last_modified DATE)")
+	or die "table creation error: $DBI::errstr\n";
+    print "created\n";
+
+#16. Create table stock_monthly_min
+    print "Creating table stock_monthly_min -> ";
+    $dbh->do
+	("create table stock_monthly_min( \
+          id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+          ticker_name INT(10) UNSIGNED, \
+          date_month_end DATE, \
+          date_price DATE, \
+          min_price DECIMAL(9,2), \
+          date_last_modified DATE)")
+	or die "table creation error: $DBI::errstr\n";
+    print "created\n";
+
+#17. Create table stock_weekly_max
+    print "Creating table stock_weekly_max -> ";
+    $dbh->do
+	("create table stock_weekly_max( \
+          id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+          ticker_name INT(10) UNSIGNED, \
+          date_week_end DATE, \
+          date_price DATE, \
+          max_price DECIMAL(9,2), \
+          date_last_modified DATE)")
+	or die "table creation error: $DBI::errstr\n";
+    print "created \n";
+
+#18. Create table stock_weekly_min
+    print "Creating table stock_weekly_min -> ";
+    $dbh->do
+	("create table stock_weekly_min( \
+          id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+          ticker_name INT(10) UNSIGNED, \
+          date_week_end DATE, \
+          date_price DATE, \
+          min_price DECIMAL(9,2), \
           date_last_modified DATE)")
 	or die "table creation error: $DBI::errstr\n";
     print "created \n";

@@ -11,19 +11,25 @@
 
 To Do Next:
 
-6/5/2015
-1. Take stocks from database GannSelector/stock_prices and generate weekly, 
-   monthly and yearly maximum and minimums.  Create three new tables in 
-   GannSelector - stock_yearly_max_min, stock_monthly_max_min, 
-   stock_weekly_max_min
+8/5/2015
+1. Traverse tables and create maximum and minimum entries for;
+   i.   yearly
+   ii.  monthly
+   iii. weekly
 
-
+2. 
 
 
 
 
 
 Done
+8/5/2015
+1. Take stocks from database GannSelector/stock_prices and generate weekly, 
+   monthly and yearly maximum and minimums.  Create six new tables in 
+   GannSelector - stock_yearly_max, stock_yearly_min, stock_monthly_max, stock_monthly_min,
+   stock_weekly_max, stock_weekly_min
+
 6/5/2015
 1. Moved Download/test_database_config.pl to Config/database_initialisation.pl
 2. Created tables for yearly, monthly and daily max and min values and added to Config/database_initialisation.pl
