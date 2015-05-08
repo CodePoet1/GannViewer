@@ -255,7 +255,7 @@ sub OpenDatabase{
 	
 	    $file_date = $year . $month . $day;
 	    
-	    my $sql_insert = "insert into stock_prices (id, ticker_name, date_price, open, high, low, close, volume, adjclose, date_modified) values ( DEFAULT, $ticker_id, $file_date, $file_open, $file_high, $file_low, $file_close, $file_vol, $file_adjclose, '2103-10-01')";
+	    my $sql_insert = "insert into stock_prices (id, ticker_name, date_price, open, high, low, close, volume, adjclose, date_last_modified) values ( DEFAULT, $ticker_id, $file_date, $file_open, $file_high, $file_low, $file_close, $file_vol, $file_adjclose, '2103-10-01')";
 	    my $sth_insert = $dbh->prepare($sql_insert);
 	    $sth_insert->execute 
 		or die "SQL Error: $DBI::errstr\n";
