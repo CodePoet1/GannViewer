@@ -87,6 +87,15 @@ sub OpenDatabase{
     my $sth_ticker_list = $dbh->prepare($sql_command);
     $sth_ticker_list->execute 
 	or die "SQL Error: $DBI::errstr\n";
+
+    #Delete stock_yearly_max table
+    $dbh->do("DELETE FROM stock_yearly_max")
+	or die "Could not delete table stock_yearly_max: $DBI::errstr\n";
+
+    #Delete stock_yearly_min table
+    $dbh->do("DELETE FROM stock_yearly_min")
+	or die "Could not delete table stock_yearly_min: $DBI::errstr\n";
+
     
 #This lists the index of stocks in the stock_ticker table, an array will be generated that can be traversed
     while(my @row = $sth_ticker_list->fetchrow_array){
@@ -129,10 +138,10 @@ sub OpenDatabase{
 	my @stock_description = $sth_stock_name->fetchrow_array;
 	print "Stock name -> " . $stock_description[0] . "\n";
 
-
         #iterate through all of the years
 	for(my $year_count = $first_year; $year_count <= $last_year; $year_count++){
 
+	    #Get the maximum value for the year
 	    $sql_command = "select date_price, max(high) \
                             from stock_prices \
                             where year(date_price) = $year_count and ticker_name = $ticker_id";
@@ -142,6 +151,7 @@ sub OpenDatabase{
 
 	    my @high_price = $sth_year_price->fetchrow_array;
 
+	    #Get the minimum value for the year
 	    $sql_command = "select date_price, min(low) \
                             from stock_prices \
                             where year(date_price) = $year_count and ticker_name = $ticker_id";
@@ -151,9 +161,26 @@ sub OpenDatabase{
 
 	    my @low_price = $sth_year_price_low->fetchrow_array;
 
-	    print "Year $high_price[0] is $high_price[1](high) $low_price[1](low)\n";
+	    #Extract the variables from the arrays and make them easier to read
+            my $db_date_year_end_max = $high_price[0];
+	    my $db_max_price         = $high_price[1];
+            my $db_date_year_end_min = $low_price[0];
+	    my $db_min_price         = $low_price[1];
+  
+	   
+	    #Insert data into stock_yearly_min table
+	    $dbh->do("INSERT INTO stock_yearly_min(ticker_name, date_year_end, min_price) \
+                      VALUES( '$ticker_id', '$db_date_year_end_min', '$db_min_price')")
+		or die "Could not insert data error: $DBI::errstr\n";
+
+	    #Insert data into stock_yearly_max table
+	    $dbh->do("INSERT INTO stock_yearly_max(ticker_name, date_year_end, max_price) \
+                      VALUES( '$ticker_id', '$db_date_year_end_max', '$db_max_price')")
+		or die "Could not insert data error: $DBI::errstr\n";
+
+	    print "Year $db_date_year_end_min is $db_max_price(high) $db_min_price(low)\n";
+	    
 
 	}
-	<STDIN>;
     }
 }
