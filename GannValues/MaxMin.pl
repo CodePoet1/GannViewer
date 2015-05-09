@@ -111,61 +111,55 @@ sub OpenDatabase{
     #Delete stock_weekly_min table
     $dbh->do("DELETE FROM stock_weekly_min")
 	or die "Could not delete table stock_monthly_min: $DBI::errstr\n";
-    
-#This lists the index of stocks in the stock_ticker table, an array will be generated that can be traversed
+
+#    
+#This lists the index of stocks in the stock_ticker table, an array will be 
+#generated that can be traversed
+#
     while(my @row = $sth_ticker_list->fetchrow_array){
 	my $ticker_id = $row[0];
 
 	#Get the earliest price date we have of this stock
-	$sql_command = "select min(stock_prices.date_price) from stock_prices where ticker_name=$ticker_id";
+	$sql_command = "select min(stock_prices.date_price) \
+                        from stock_prices where ticker_name=$ticker_id";
 	my $sth_earliest_price = $dbh->prepare($sql_command);
 	$sth_earliest_price->execute 
 	    or die "SQL Error: $DBI::errstr\n";
-
 	my @first_date = $sth_earliest_price->fetchrow_array;
 
-
 	#Get all of the prices in this stock from the earliest year to the next year
-	my ($first_year,$first_month,$first_day) = $first_date[0] =~ /^([0-9]{4})-([0-9]{2})-([0-9]{2})\z/
-	    or die;
-
-
+	my ($first_year,$first_month,$first_day) = $first_date[0] 
+             =~ /^([0-9]{4})-([0-9]{2})-([0-9]{2})\z/ or die;
 
 	#Get the first price date we have of this stock
-	$sql_command = "select max(stock_prices.date_price) from stock_prices where ticker_name=$ticker_id";
+	$sql_command = "select max(stock_prices.date_price) \
+                        from stock_prices where ticker_name=$ticker_id";
 	my $sth_latest_price = $dbh->prepare($sql_command);
 	$sth_latest_price->execute 
 	    or die "SQL Error: $DBI::errstr\n";
-
 	my @last_date = $sth_latest_price->fetchrow_array;
 
-	my ($last_year,$last_month,$last_day) = $last_date[0] =~ /^([0-9]{4})-([0-9]{2})-([0-9]{2})\z/
-	    or die;
-
-
+	my ($last_year,$last_month,$last_day) = $last_date[0] 
+             =~ /^([0-9]{4})-([0-9]{2})-([0-9]{2})\z/ or die;
 
 	#Get the earliest week price date we have of this stock
-	$sql_command = "select week(min(stock_prices.date_price)) from stock_prices where ticker_name=$ticker_id";
+	$sql_command = "select week(min(stock_prices.date_price)) \
+                        from stock_prices where ticker_name=$ticker_id";
 	my $sth_earliest_price_week = $dbh->prepare($sql_command);
 	$sth_earliest_price_week->execute 
 	    or die "SQL Error: $DBI::errstr\n";
-
 	my @first_date_week = $sth_earliest_price_week->fetchrow_array;
 	my $first_week = $first_date_week[0];
 
-
 	#Get the latest week price date we have of this stock
-	$sql_command = "select week(max(stock_prices.date_price)) from stock_prices where ticker_name=$ticker_id";
+	$sql_command = "select week(max(stock_prices.date_price)) \
+                        from stock_prices where ticker_name=$ticker_id";
 	my $sth_latest_price_week = $dbh->prepare($sql_command);
 	$sth_latest_price_week->execute 
 	    or die "SQL Error: $DBI::errstr\n";
-
 	my @last_date_week = $sth_latest_price_week->fetchrow_array;
 	my $last_week = $last_date_week[0];
 
-#	print "1st - $first_week : last - $last_week\n";
-
-        
         #Retrieve stock description
 	$sql_command = "select stock_ticker.description \
                         from stock_ticker \
@@ -218,14 +212,17 @@ sub OpenDatabase{
 	    my $DateNow  = $dt->ymd;
 	   
 	    #Insert data into stock_yearly_min table
-	    $dbh->do("INSERT INTO stock_yearly_min(ticker_name, date_year_end, min_price, date_last_modified) \
+	    $dbh->do("INSERT INTO stock_yearly_min \
+                      (ticker_name, date_year_end, min_price, date_last_modified) \
                       VALUES( '$ticker_id', '$db_date_year_end_min', '$db_min_price', '$DateNow')")
 		or die "Could not insert data error: $DBI::errstr\n";
 
 	    #Insert data into stock_yearly_max table
-	    $dbh->do("INSERT INTO stock_yearly_max(ticker_name, date_year_end, max_price, date_last_modified) \
+	    $dbh->do("INSERT INTO stock_yearly_max \
+                      (ticker_name, date_year_end, max_price, date_last_modified) \
                       VALUES( '$ticker_id', '$db_date_year_end_max', '$db_max_price', '$DateNow')")
 		or die "Could not insert data error: $DBI::errstr\n";
+
             #
             #
             # This routine iterates through each month to populate
@@ -237,8 +234,11 @@ sub OpenDatabase{
 	    my $month_finish=12;
 	    if($year_count==$last_year){$month_finish = $last_month;}
 
-	    for(my $month_count = $month_initialisation; $month_count<=$month_finish; $month_count++){
-		#Get the maximum value for the month
+	    for(my $month_count =  $month_initialisation; 
+		   $month_count <= $month_finish; 
+                   $month_count++){
+		
+                #Get the maximum value for the month
 		$sql_command = "select date_price, max(high) \
                             from stock_prices \
                             where year(date_price) = $year_count \
@@ -268,14 +268,18 @@ sub OpenDatabase{
 		my $db_date_month_end_min = $low_price_monthly[0];
 		my $db_min_price_month    = $low_price_monthly[1];
 
-		$dbh->do("INSERT INTO stock_monthly_max(ticker_name, date_month_end, max_price, date_last_modified) \
-                          VALUES('$ticker_id', '$db_date_month_end_max', '$db_max_price_month', '$DateNow')")
+		$dbh->do("INSERT INTO stock_monthly_max \
+                          (ticker_name, date_month_end, max_price, date_last_modified) \
+                          VALUES('$ticker_id', '$db_date_month_end_max', '$db_max_price_month', \
+                                 '$DateNow')")
 		    or die "Could not insert data error: $DBI::errstre\n";
 
-		$dbh->do("INSERT INTO stock_monthly_min(ticker_name, date_month_end, min_price, date_last_modified) \
-                          VALUES('$ticker_id', '$db_date_month_end_min', '$db_min_price_month', '$DateNow')")
+		$dbh->do("INSERT INTO stock_monthly_min \
+                          (ticker_name, date_month_end, min_price, date_last_modified) \
+                          VALUES('$ticker_id', '$db_date_month_end_min', '$db_min_price_month', \
+                                 '$DateNow')")
 		    or die "Could not insert data error: $DBI::errstre\n";
-	    }#end of for(my $month_count
+	    }#for(my $month_count
 
             #
             #
@@ -289,10 +293,6 @@ sub OpenDatabase{
 	    if($year_count==$last_year){$week_finish = $last_week;}
 
 	    for(my $week_count = $week_initialisation; $week_count<=$week_finish; $week_count++){
-#		print "2. Year_count - $year_count : last_year - $last_year : 1st - $first_week : last - $last_week\n";
-
-#		print "--> $first_week : $week_count : $week_finish \n";
-#		<stdin>;
 
 		#Get the maximum value for the week
 		$sql_command = "select date_price, max(high) \
@@ -305,8 +305,6 @@ sub OpenDatabase{
 		    or die "SQL Error: $DBI::errstr\n";
 
 		my @high_price_weekly = $sth_week_price->fetchrow_array;
-
-#		print "Date -> $high_price_weekly[0]\n";
 
 		$sql_command = "select date_price, min(low) \
                             from stock_prices \
@@ -326,22 +324,21 @@ sub OpenDatabase{
 		my $db_date_week_end_min = $low_price_weekly[0];
 		my $db_min_price_week    = $low_price_weekly[1];
 
-		$dbh->do("INSERT INTO stock_weekly_max(ticker_name, date_week_end, max_price, date_last_modified) \
-                          VALUES('$ticker_id', '$db_date_week_end_max', '$db_max_price_week', '$DateNow')")
+		$dbh->do("INSERT INTO stock_weekly_max \
+                          (ticker_name, date_week_end, max_price, date_last_modified) \
+                          VALUES('$ticker_id', '$db_date_week_end_max', '$db_max_price_week', \
+                          '$DateNow')")
 		    or die "Could not insert data error: $DBI::errstre\n";
 
-		$dbh->do("INSERT INTO stock_weekly_min(ticker_name, date_week_end, min_price, date_last_modified) \
-                          VALUES('$ticker_id', '$db_date_week_end_min', '$db_min_price_week', '$DateNow')")
+		$dbh->do("INSERT INTO stock_weekly_min \
+                          (ticker_name, date_week_end, min_price, date_last_modified) \
+                          VALUES('$ticker_id', '$db_date_week_end_min', '$db_min_price_week', \
+                          '$DateNow')")
 		    or die "Could not insert data error: $DBI::errstre\n";
+	    }#for(my $week_count
 
-#		print "Date $db_date_week_end_max : $db_min_price_week (min) : $db_max_price_week (max)\n";
- 
-#		<STDIN>;
-	    }#end of for(my $week_count
+	}#year routine
 
-#	<STDIN>;
-	}#end of year routine
+    }#stock_id routine
 
-
-    }#end of stock_id routine
 }

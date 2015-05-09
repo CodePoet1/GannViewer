@@ -11,19 +11,21 @@
 
 To Do Next:
 
-8/5/2015
+9/5/2015
+1. Create tables for
+   i.   2 and 3 yearly
+   ii.  2 and 3 monthly
+   iii. 2 and 3 weekly
+
+
+
+Done
+9/5/2015
 1. Traverse tables and create maximum and minimum entries for;
    i.   yearly
    ii.  monthly
    iii. weekly
 
-2. 
-
-
-
-
-
-Done
 8/5/2015
 1. Take stocks from database GannSelector/stock_prices and generate weekly, 
    monthly and yearly maximum and minimums.  Create six new tables in 
