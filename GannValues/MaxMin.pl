@@ -23,6 +23,7 @@ use LWP::Simple;
 use DBI;
 use DateTime;
 use Getopt::Std;
+use Data::Dumper;
 
 #######################################################################
 # This is where is starts                                             #
@@ -81,6 +82,9 @@ sub OpenDatabase{
 #Connect to database
     my $dbh = DBI->connect("DBI:mysql:$database",$user,$pw)
 	or die "Connection error: $DBI::errstr\n";
+
+    goto two_day;
+
 
     my $sql_command = "select * from stock_ticker";
 
@@ -340,5 +344,52 @@ sub OpenDatabase{
 	}#year routine
 
     }#stock_id routine
+
+
+
+two_day:
+    #
+    #
+    # Now generate 2 and 3 day generators
+    #
+    #
+    $sql_command = "select * from stock_ticker";
+    $sth_ticker_list = $dbh->prepare($sql_command);
+    $sth_ticker_list->execute 
+	or die "SQL Error: $DBI::errstr\n";
+
+    #    
+    #This lists the index of stocks in the stock_ticker table, an array will be 
+    #generated that can be traversed
+    #
+    while(my @ticker_list_row = $sth_ticker_list->fetchrow_array){
+	my $ticker_id = $ticker_list_row[0];
+	print "Ticker_id -> $ticker_id\n";
+
+        #
+        # get yearly values and store in an array
+        #
+	$sql_command = qq{select stock_yearly_max.date_year_end, stock_yearly_max.max_price, \
+                               stock_yearly_min.date_year_end, stock_yearly_min.min_price  \
+                               from stock_yearly_max, stock_yearly_min \
+                               where stock_yearly_max.date_year_end = stock_yearly_min.date_year_end \
+                               and stock_yearly_max.ticker_name = $ticker_id and stock_yearly_min.ticker_name = $ticker_id};
+
+	#my $employees_hoh = $dbh->selectall_hashref($sql_command, 1);
+	
+	my %yearly_list =
+        map { shift @$_, [ @$_ ]}
+        @{$dbh->selectall_arrayref($sql_command)};
+	
+
+#	print Dumper(%yearly_list);
+
+
+	foreach my $date_for_year_end (sort keys %yearly_list) {
+	    my @price_array = @{$yearly_list{$date_for_year_end}};
+	    print "$date_for_year_end - \t@price_array[0](high) \t@price_array[2](low)\n";
+	}
+       
+    }
 
 }

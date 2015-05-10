@@ -138,8 +138,8 @@ sub OpenDatabase{
 	("create table stock_yearly_max( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
           ticker_name INT(10) UNSIGNED, \
-          date_price DATE, \
           date_year_end DATE, \
+          date_price DATE, \
           max_price DECIMAL(9,2), \
           date_last_modified DATE)")
 	or die "table creation error: $DBI::errstr\n";
