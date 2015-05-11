@@ -375,20 +375,21 @@ two_day:
                                where stock_yearly_max.date_year_end = stock_yearly_min.date_year_end \
                                and stock_yearly_max.ticker_name = $ticker_id and stock_yearly_min.ticker_name = $ticker_id};
 
-	#my $employees_hoh = $dbh->selectall_hashref($sql_command, 1);
+	my $sth_yearly_list = $dbh->prepare($sql_command);
+	$sth_yearly_list->execute();
+	my $employees_lol = $sth_yearly_list->fetchall_arrayref();	
+
+#	print Dumper($employees_lol);
 	
-	my %yearly_list =
-        map { shift @$_, [ @$_ ]}
-        @{$dbh->selectall_arrayref($sql_command)};
-	
+	my $size = @$employees_lol;
+	my $row_num = $size-1;
 
-#	print Dumper(%yearly_list);
+	print "Arrany size ia $size, ";
+	print "Last row is -> $employees_lol->[$row_num][0] : 
+                                  $employees_lol->[$row_num][1] : 
+                                  $employees_lol->[$row_num][2] : 
+                                  $employees_lol->[$row_num][3]\n";
 
-
-	foreach my $date_for_year_end (sort keys %yearly_list) {
-	    my @price_array = @{$yearly_list{$date_for_year_end}};
-	    print "$date_for_year_end - \t@price_array[0](high) \t@price_array[2](low)\n";
-	}
        
     }
 
