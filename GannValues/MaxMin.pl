@@ -377,20 +377,103 @@ two_day:
 
 	my $sth_yearly_list = $dbh->prepare($sql_command);
 	$sth_yearly_list->execute();
-	my $employees_lol = $sth_yearly_list->fetchall_arrayref();	
+	my $yearly_values_list = $sth_yearly_list->fetchall_arrayref();	
 
 #	print Dumper($employees_lol);
+
+
+
+
 	
-	my $size = @$employees_lol;
+	my $size = @$yearly_values_list;
 	my $row_num = $size-1;
 
-	print "Arrany size ia $size, ";
-	print "Last row is -> $employees_lol->[$row_num][0] : 
-                                  $employees_lol->[$row_num][1] : 
-                                  $employees_lol->[$row_num][2] : 
-                                  $employees_lol->[$row_num][3]\n";
+	#
+	#Two year trend indicator
+	#
+	my $two_year_trend_direction_up = 0;
+	for(my $row_counter=0; $row_counter<($row_num); $row_counter++){
+	    if ($two_year_trend_direction_up == 0){
+		if($yearly_values_list->[$row_counter+1][1] > $yearly_values_list->[$row_counter][1]){
+		    if($yearly_values_list->[$row_counter+1][3] > $yearly_values_list->[$row_counter][3]){
+			$two_year_trend_direction_up=1;
+			print "Two year trend changed to up on $yearly_values_list->[$row_counter+1][0]\n";
+		    }
+		}
+	    }
 
+	    elsif ($two_year_trend_direction_up == 1){
+		if($yearly_values_list->[$row_counter+1][1] < $yearly_values_list->[$row_counter][1]){
+		    if($yearly_values_list->[$row_counter+1][3] < $yearly_values_list->[$row_counter][3]){
+			$two_year_trend_direction_up=0;
+			print "Two year trend changed to down on $yearly_values_list->[$row_counter+1][0]\n";
+		    }
+		}
+	    }
+	}
        
+	#
+	#Three year trend indicator
+	#
+	my $three_year_trend_direction_up = 0;
+	for(my $row_counter=0; $row_counter<($row_num-1); $row_counter++){
+	    if ($three_year_trend_direction_up == 0){
+		if($yearly_values_list->[$row_counter+1][1] > $yearly_values_list->[$row_counter][1]){
+		    if($yearly_values_list->[$row_counter+2][1] > $yearly_values_list->[$row_counter+1][1]){
+			if($yearly_values_list->[$row_counter+1][3] > $yearly_values_list->[$row_counter][3]){
+			    if($yearly_values_list->[$row_counter+2][3] > $yearly_values_list->[$row_counter+1][3]){
+				$three_year_trend_direction_up=1;
+				print "Three year trend changed to up on $yearly_values_list->[$row_counter+2][0]\n";
+			    }
+			}
+		    }
+		}
+	    }#if ($three_year_trend_
+	    elsif ($three_year_trend_direction_up == 1){
+		if($yearly_values_list->[$row_counter+1][1] < $yearly_values_list->[$row_counter][1]){
+		    if($yearly_values_list->[$row_counter+2][1] < $yearly_values_list->[$row_counter+1][1]){
+			if($yearly_values_list->[$row_counter+1][3] < $yearly_values_list->[$row_counter][3]){
+			    if($yearly_values_list->[$row_counter+2][3] < $yearly_values_list->[$row_counter+1][3]){
+				$three_year_trend_direction_up=0;
+				print "Three year trend changed to down on $yearly_values_list->[$row_counter+2][0]\n";
+			    }
+			}
+		    }
+		}
+	    }#elsif ($three_year_trend
+	}#for(my $row_counter=0;
+
     }
 
 }
+
+
+
+#sub TwoBarTrenIndicator{
+#    my $size = @$yearly_values_list;
+#    my $row_num = $size-1;
+
+    #
+    #Two year trend indicator
+    #
+#    my $two_year_trend_direction_up = 0;
+#    for(my $row_counter=0; $row_counter<($row_num); $row_counter++){
+#	if ($two_year_trend_direction_up == 0){
+#	    if($yearly_values_list->[$row_counter+1][1] > $yearly_values_list->[$row_counter][1]){
+#		if($yearly_values_list->[$row_counter+1][3] > $yearly_values_list->[$row_counter][3]){
+#		    $two_year_trend_direction_up=1;
+#		    print "Two year trend changed to up on $yearly_values_list->[$row_counter+1][0]\n";
+#		}
+#	    }
+#	}
+#	
+#	elsif ($two_year_trend_direction_up == 1){
+#	    if($yearly_values_list->[$row_counter+1][1] < $yearly_values_list->[$row_counter][1]){
+#		if($yearly_values_list->[$row_counter+1][3] < $yearly_values_list->[$row_counter][3]){
+#		    $two_year_trend_direction_up=0;
+#		    print "Two year trend changed to down on $yearly_values_list->[$row_counter+1][0]\n";
+#		}
+#	    }
+#	}
+#   }
+#}
