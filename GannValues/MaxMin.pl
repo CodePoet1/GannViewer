@@ -381,99 +381,101 @@ two_day:
 
 #	print Dumper($employees_lol);
 
-
-
-
-	
-	my $size = @$yearly_values_list;
-	my $row_num = $size-1;
-
-	#
-	#Two year trend indicator
-	#
-	my $two_year_trend_direction_up = 0;
-	for(my $row_counter=0; $row_counter<($row_num); $row_counter++){
-	    if ($two_year_trend_direction_up == 0){
-		if($yearly_values_list->[$row_counter+1][1] > $yearly_values_list->[$row_counter][1]){
-		    if($yearly_values_list->[$row_counter+1][3] > $yearly_values_list->[$row_counter][3]){
-			$two_year_trend_direction_up=1;
-			print "Two year trend changed to up on $yearly_values_list->[$row_counter+1][0]\n";
-		    }
-		}
-	    }
-
-	    elsif ($two_year_trend_direction_up == 1){
-		if($yearly_values_list->[$row_counter+1][1] < $yearly_values_list->[$row_counter][1]){
-		    if($yearly_values_list->[$row_counter+1][3] < $yearly_values_list->[$row_counter][3]){
-			$two_year_trend_direction_up=0;
-			print "Two year trend changed to down on $yearly_values_list->[$row_counter+1][0]\n";
-		    }
-		}
-	    }
-	}
-       
-	#
-	#Three year trend indicator
-	#
-	my $three_year_trend_direction_up = 0;
-	for(my $row_counter=0; $row_counter<($row_num-1); $row_counter++){
-	    if ($three_year_trend_direction_up == 0){
-		if($yearly_values_list->[$row_counter+1][1] > $yearly_values_list->[$row_counter][1]){
-		    if($yearly_values_list->[$row_counter+2][1] > $yearly_values_list->[$row_counter+1][1]){
-			if($yearly_values_list->[$row_counter+1][3] > $yearly_values_list->[$row_counter][3]){
-			    if($yearly_values_list->[$row_counter+2][3] > $yearly_values_list->[$row_counter+1][3]){
-				$three_year_trend_direction_up=1;
-				print "Three year trend changed to up on $yearly_values_list->[$row_counter+2][0]\n";
-			    }
-			}
-		    }
-		}
-	    }#if ($three_year_trend_
-	    elsif ($three_year_trend_direction_up == 1){
-		if($yearly_values_list->[$row_counter+1][1] < $yearly_values_list->[$row_counter][1]){
-		    if($yearly_values_list->[$row_counter+2][1] < $yearly_values_list->[$row_counter+1][1]){
-			if($yearly_values_list->[$row_counter+1][3] < $yearly_values_list->[$row_counter][3]){
-			    if($yearly_values_list->[$row_counter+2][3] < $yearly_values_list->[$row_counter+1][3]){
-				$three_year_trend_direction_up=0;
-				print "Three year trend changed to down on $yearly_values_list->[$row_counter+2][0]\n";
-			    }
-			}
-		    }
-		}
-	    }#elsif ($three_year_trend
-	}#for(my $row_counter=0;
+	TwoBarTrenIndicator($yearly_values_list);
+	ThreeBarTrendIndicator($yearly_values_list);
 
     }
-
 }
 
 
+#
+#Generic two bar routine for any high/low array, eg yearly, monthly, weekly  or daily
+#
+sub TwoBarTrenIndicator{
+    my $DB_Array_ref = $_[0];
+    my $size = @$DB_Array_ref;
+    my $row_num = $size-1;
+    my $trend_date=0;
+    my $high=0;
+    my $low=0;
 
-#sub TwoBarTrenIndicator{
-#    my $size = @$yearly_values_list;
-#    my $row_num = $size-1;
+    print "Two bar Array size is $size\n";
 
     #
-    #Two year trend indicator
+    #Two bar trend indicator
     #
-#    my $two_year_trend_direction_up = 0;
-#    for(my $row_counter=0; $row_counter<($row_num); $row_counter++){
-#	if ($two_year_trend_direction_up == 0){
-#	    if($yearly_values_list->[$row_counter+1][1] > $yearly_values_list->[$row_counter][1]){
-#		if($yearly_values_list->[$row_counter+1][3] > $yearly_values_list->[$row_counter][3]){
-#		    $two_year_trend_direction_up=1;
-#		    print "Two year trend changed to up on $yearly_values_list->[$row_counter+1][0]\n";
-#		}
-#	    }
-#	}
-#	
-#	elsif ($two_year_trend_direction_up == 1){
-#	    if($yearly_values_list->[$row_counter+1][1] < $yearly_values_list->[$row_counter][1]){
-#		if($yearly_values_list->[$row_counter+1][3] < $yearly_values_list->[$row_counter][3]){
-#		    $two_year_trend_direction_up=0;
-#		    print "Two year trend changed to down on $yearly_values_list->[$row_counter+1][0]\n";
-#		}
-#	    }
-#	}
-#   }
-#}
+    my $two_bar_trend_direction_up = 0;
+    for(my $row_counter=0; $row_counter<($row_num); $row_counter++){
+	if ($two_bar_trend_direction_up == 0){
+	    if($DB_Array_ref->[$row_counter+1][1] > $DB_Array_ref->[$row_counter][1]){
+		if($DB_Array_ref->[$row_counter+1][3] > $DB_Array_ref->[$row_counter][3]){
+		    $two_bar_trend_direction_up=1;
+		    $trend_date = $DB_Array_ref->[$row_counter+1][0];
+		    $low = $DB_Array_ref->[$row_counter+1][3];
+		    print "Two year trend changed to up on \t$trend_date \t$low (low)\n";
+		}
+	    }
+	}
+	
+	elsif ($two_bar_trend_direction_up == 1){
+	    if($DB_Array_ref->[$row_counter+1][1] < $DB_Array_ref->[$row_counter][1]){
+		if($DB_Array_ref->[$row_counter+1][3] < $DB_Array_ref->[$row_counter][3]){
+		    $two_bar_trend_direction_up=0;
+		    $trend_date = $DB_Array_ref->[$row_counter+1][0];
+		    $high = $DB_Array_ref->[$row_counter+1][1];
+		    print "Two year trend changed to down on \t$trend_date \t$high  (high)\n";
+		}
+	    }
+	}
+    }
+}
+
+
+#
+#Generic three bar routine for any high/low array, eg yearly, monthly, weekly  or daily
+#
+sub ThreeBarTrendIndicator{
+    my $DB_Array_ref = $_[0];
+    my $size = @$DB_Array_ref;
+    my $row_num = $size-1;
+    my $trend_date=0;
+    my $high=0;
+    my $low=0;
+
+    print "Three bar Array size is $size\n";
+
+    #
+    #Three bar trend indicator
+    #
+    my $three_bar_trend_direction_up = 0;
+    for(my $row_counter=0; $row_counter<($row_num-1); $row_counter++){
+	if ($three_bar_trend_direction_up == 0){
+	    if($DB_Array_ref->[$row_counter+1][1] > $DB_Array_ref->[$row_counter][1]){
+		if($DB_Array_ref->[$row_counter+2][1] > $DB_Array_ref->[$row_counter+1][1]){
+		    if($DB_Array_ref->[$row_counter+1][3] > $DB_Array_ref->[$row_counter][3]){
+			if($DB_Array_ref->[$row_counter+2][3] > $DB_Array_ref->[$row_counter+1][3]){
+			    $three_bar_trend_direction_up=1;
+			    $trend_date = $DB_Array_ref->[$row_counter+2][0];
+			    $low = $DB_Array_ref->[$row_counter+2][3];
+			    print "Three bar trend changed to up on \t$trend_date \t$low (low)\n";
+			}
+		    }
+		}
+	    }
+	}#if ($three_bar_trend_
+	elsif ($three_bar_trend_direction_up == 1){
+	    if($DB_Array_ref->[$row_counter+1][1] < $DB_Array_ref->[$row_counter][1]){
+		if($DB_Array_ref->[$row_counter+2][1] < $DB_Array_ref->[$row_counter+1][1]){
+		    if($DB_Array_ref->[$row_counter+1][3] < $DB_Array_ref->[$row_counter][3]){
+			if($DB_Array_ref->[$row_counter+2][3] < $DB_Array_ref->[$row_counter+1][3]){
+			    $three_bar_trend_direction_up=0;
+			    $trend_date = $DB_Array_ref->[$row_counter+2][0];
+			    $high = $DB_Array_ref->[$row_counter+2][1];
+			    print "Three bar trend changed to down on \t$trend_date \t$high (high)\n";
+			}
+		    }
+		}
+	    }
+	}#elsif ($three_bar_trend
+    }#for(my $row_counter=0;
+}
