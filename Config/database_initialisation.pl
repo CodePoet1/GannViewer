@@ -23,7 +23,7 @@ sub OpenDatabase{
     my $pw = "monty123";
 
 #Connect to database
-# 1. connect to MYSQL database
+#1. connect to MYSQL database
     print "Connecting to MYSQL -> ";
     my $dbh = DBI->connect("dbi:mysql:", $user, $pw)
 	or die "Connection error: $DBI::errstr\n";
@@ -82,26 +82,7 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
-#8. Insert data into url_name
-    print "Inserting test data into url_name -> ";
-    $dbh->do("INSERT INTO url_name (url_str) VALUES('http://ichart.finance.yahoo.com/table.csv?s=')")
-	or die "table creation error: $DBI::errstr\n";
-    print("inserted\n");
-
-#9. Insert data into stock_ticker
-    print "Inserting test data into stock_ticker -> ";
-    $dbh->do("INSERT INTO stock_ticker (ticker_name, description) \
-             VALUES('BP.L','BP UK'), \
-                   ('%5EFTSE','FTSE100 UK'), \
-                   ('BT','British Telecom UK'), \
-                   ('ARM.L','ARM UK'), \
-                   ('AV.L','Aviva UK')
-             ")
-	or die "table creation error: $DBI::errstr\n";
-
-    print("inserted\n");
-
-#10. Create table gann_level_types
+#8. Create table gann_level_types
     print "Creating table gann_levels_types -> ";
     $dbh->do("create table gann_levels_types( \
               id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
@@ -110,18 +91,7 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print("created\n");
 
-#11. Insert data into gann_level_types
-    print "Inserting data into gann_level_types -> ";
-    $dbh->do("INSERT INTO gann_levels_types (description) \
-             VALUES('G1 = 50%'), \
-                   ('G2 = 50% of H-l'), \
-                   ('All time low'), \
-                   ('All time high') \ 
-             ")
-	or die "table insertion error:  $DBI::errstr\n";
-    print ("inserted\n");
-
-#12. Create table gann_levels
+#9. Create table gann_levels
     print "Creating table gann_levels -> ";
     $dbh->do
 	("create table gann_levels( \
@@ -132,7 +102,7 @@ sub OpenDatabase{
 	or die "table gann_level_type error: $DBI::errstr\n";
     print("created\n");
 
-#13. Create table stock_yearly_max
+#10. Create table stock_yearly_max
     print "Creating table stock_yearly_max -> ";
     $dbh->do
 	("create table stock_yearly_max( \
@@ -145,7 +115,7 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
-#14. Create table stock_yearly_min
+#11. Create table stock_yearly_min
     print "Creating table stock_yearly_min -> ";
     $dbh->do
 	("create table stock_yearly_min( \
@@ -171,7 +141,7 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
-#16. Create table stock_monthly_min
+#12. Create table stock_monthly_min
     print "Creating table stock_monthly_min -> ";
     $dbh->do
 	("create table stock_monthly_min( \
@@ -184,7 +154,7 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
-#17. Create table stock_weekly_max
+#13. Create table stock_weekly_max
     print "Creating table stock_weekly_max -> ";
     $dbh->do
 	("create table stock_weekly_max( \
@@ -197,7 +167,7 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created \n";
 
-#18. Create table stock_weekly_min
+#14. Create table stock_weekly_min
     print "Creating table stock_weekly_min -> ";
     $dbh->do
 	("create table stock_weekly_min( \
@@ -210,6 +180,84 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created \n";
 
+#15. Create table message_log_types
+    print "Creating table message_log_type -> ";
+    $dbh->do
+	("CREATE TABLE message_log_type( \
+          id INT NOT NULL AUTO_INCREMENT, \
+          type_str VARCHAR(64) NOT NULL, \
+          primary key (id))")
+	or die "table creation error: $DBI::errstr\n";
+    print "created\n";
+
+#16. Create table message_log
+    print "Creating table message_log -> ";
+    $dbh->do
+	("CREATE TABLE message_log( \
+          id INT NOT NULL AUTO_INCREMENT,\
+          message_type INT NOT NULL, \
+          timestamp_t DATETIME, \
+          message_string VARCHAR(255) NOT NULL, \
+          primary key (id), \
+          foreign key (message_type) references message_log_type(id)) ")
+	or die "table creation error: $DBI::errstr\n";
+    print "created\n";
+
+
+
+
+
+#
+#Insert data into tables
+#
+
+#100. Insert data into url_name
+    print "Inserting test data into url_name -> ";
+    $dbh->do("INSERT INTO url_name (url_str) VALUES('http://ichart.finance.yahoo.com/table.csv?s=')")
+	or die "table creation error: $DBI::errstr\n";
+    print("inserted\n");
+
+#101. Insert data into stock_ticker
+    print "Inserting test data into stock_ticker -> ";
+    $dbh->do("INSERT INTO stock_ticker (ticker_name, description) \
+             VALUES('BP.L','BP UK'), \
+                   ('%5EFTSE','FTSE100 UK'), \
+                   ('BT','British Telecom UK'), \
+                   ('ARM.L','ARM UK'), \
+                   ('AV.L','Aviva UK')
+             ")
+	or die "table creation error: $DBI::errstr\n";
+
+    print("inserted\n");
+
+
+#102. Insert data into gann_level_types
+    print "Inserting data into gann_level_types -> ";
+    $dbh->do("INSERT INTO gann_levels_types (description) \
+             VALUES('G1 = 50%'), \
+                   ('G2 = 50% of H-l'), \
+                   ('All time low'), \
+                   ('All time high') \ 
+             ")
+	or die "table insertion error:  $DBI::errstr\n";
+    print ("inserted\n");
+
+#103. Insert types into message_log_type
+    print "Insert types into message_log_type -> ";
+    $dbh->do
+	("INSERT INTO message_log_type(
+          type_str)
+          VALUES
+          ('db status '),
+          ('db error '),
+          ('system status '),
+          ('system status '),
+          ('progress status '),
+          ('progress error ')")
+	or die "table insertion error: $DBI::errstr\n";
+    print "inserted\n";         
+          
+          
 }
 
 print "\n\n";

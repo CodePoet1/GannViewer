@@ -1,4 +1,3 @@
-
 ###############################################################################
 # MaxMin.pl   tonyo  8/5/15                                                    #
 # The purpose of this script is to take the historical values in the database  #
@@ -43,14 +42,16 @@ if ($options{h}){
     print "** Hoorah for the penguin                     **\n";
     print "************************************************\n";
     print " Help                                           \n";
-    print "  -h -> prints help page                        \n\n\n\n";
+    print "  -h -> prints help page                        \n\n";
 } 
 
 # other things found on the command line
 print "Other things found on the command line:\n" if $ARGV[0];
 foreach (@ARGV)
 {
-  print "$_\n";
+  print "$_\n\n";
+  
+  goto END;
 }
 
 OpenDatabase();
