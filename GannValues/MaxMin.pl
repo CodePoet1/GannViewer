@@ -24,6 +24,10 @@ use DateTime;
 use Getopt::Std;
 use Data::Dumper;
 
+use FindBin qw($RealBin);
+use lib "$RealBin/Message_log";
+use Message_log::DataBase;
+
 #######################################################################
 # This is where is starts                                             #
 # Check for switches in perl command line                             #
@@ -83,6 +87,9 @@ sub OpenDatabase{
 #Connect to database
     my $dbh = DBI->connect("DBI:mysql:$database",$user,$pw)
 	or die "Connection error: $DBI::errstr\n";
+
+#Create log object
+    my $LogMessage = Message_log::DataBase->new($dbh);
 
     goto two_day;
 
@@ -363,9 +370,10 @@ two_day:
     #This lists the index of stocks in the stock_ticker table, an array will be 
     #generated that can be traversed
     #
+    $LogMessage->progress_status("Entering routine for MaxMin value generation - MaxMin.pl");
     while(my @ticker_list_row = $sth_ticker_list->fetchrow_array){
 	my $ticker_id = $ticker_list_row[0];
-	print "Ticker_id -> $ticker_id\n";
+	$LogMessage->progress_status("Ticker_id -> $ticker_id");
 
         #
         # get yearly values and store in an array

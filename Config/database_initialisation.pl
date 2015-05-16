@@ -251,7 +251,6 @@ sub OpenDatabase{
           ('db status '),
           ('db error '),
           ('system status '),
-          ('system status '),
           ('progress status '),
           ('progress error ')")
 	or die "table insertion error: $DBI::errstr\n";
