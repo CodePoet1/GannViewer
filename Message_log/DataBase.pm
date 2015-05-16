@@ -46,10 +46,6 @@ sub progress_status {
 	("INSERT INTO message_log(message_type, timestamp_t, message_string) \
           VALUES('5','$dt','$_[1]')")
 	or die;
-
-          
-
-    die;
 }
 
 sub progress_error {

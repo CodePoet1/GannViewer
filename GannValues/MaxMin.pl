@@ -58,6 +58,7 @@ foreach (@ARGV)
   goto END;
 }
 
+my $LogMessage;
 OpenDatabase();
 
 END:
@@ -89,7 +90,7 @@ sub OpenDatabase{
 	or die "Connection error: $DBI::errstr\n";
 
 #Create log object
-    my $LogMessage = Message_log::DataBase->new($dbh);
+    $LogMessage = Message_log::DataBase->new($dbh);
 
     goto two_day;
 
@@ -183,7 +184,7 @@ sub OpenDatabase{
 	    or die "SQL Error: $DBI::errstr\n";
 	
 	my @stock_description = $sth_stock_name->fetchrow_array;
-	print "Stock name -> " . $stock_description[0] . "\n";
+	$LogMessage->progress_status( "Stock name -> " . $stock_description[0] );
 
 	#
 	#
@@ -199,7 +200,7 @@ sub OpenDatabase{
                             where year(date_price) = $year_count and ticker_name = $ticker_id";
 	    my $sth_year_price = $dbh->prepare($sql_command);
 	    $sth_year_price->execute 
-		or die "SQL Error: $DBI::errstr\n";
+		or die "SQL Error: $DBI::errstr)";
 
 	    my @high_price = $sth_year_price->fetchrow_array;
 
@@ -408,7 +409,7 @@ sub TwoBarTrenIndicator{
     my $high=0;
     my $low=0;
 
-    print "Two bar Array size is $size\n";
+    $LogMessage->progress_status( "Two bar Array size is $size");
 
     #
     #Two bar trend indicator
@@ -421,7 +422,7 @@ sub TwoBarTrenIndicator{
 		    $two_bar_trend_direction_up=1;
 		    $trend_date = $DB_Array_ref->[$row_counter+1][0];
 		    $low = $DB_Array_ref->[$row_counter+1][3];
-		    print "Two year trend changed to up on \t$trend_date \t$low (low)\n";
+		    $LogMessage->progress_status( "Two year trend changed to up on \t$trend_date \t$low (low)");
 		}
 	    }
 	}
@@ -432,7 +433,7 @@ sub TwoBarTrenIndicator{
 		    $two_bar_trend_direction_up=0;
 		    $trend_date = $DB_Array_ref->[$row_counter+1][0];
 		    $high = $DB_Array_ref->[$row_counter+1][1];
-		    print "Two year trend changed to down on \t$trend_date \t$high  (high)\n";
+		    $LogMessage->progress_status( "Two year trend changed to down on \t$trend_date \t$high  (high)");
 		}
 	    }
 	}
@@ -451,7 +452,7 @@ sub ThreeBarTrendIndicator{
     my $high=0;
     my $low=0;
 
-    print "Three bar Array size is $size\n";
+    $LogMessage->progress_status( "Three bar Array size is $size");
 
     #
     #Three bar trend indicator
@@ -466,7 +467,7 @@ sub ThreeBarTrendIndicator{
 			    $three_bar_trend_direction_up=1;
 			    $trend_date = $DB_Array_ref->[$row_counter+2][0];
 			    $low = $DB_Array_ref->[$row_counter+2][3];
-			    print "Three bar trend changed to up on \t$trend_date \t$low (low)\n";
+			    $LogMessage->progress_status( "Three bar trend changed to up on \t$trend_date \t$low (low)");
 			}
 		    }
 		}
@@ -480,7 +481,7 @@ sub ThreeBarTrendIndicator{
 			    $three_bar_trend_direction_up=0;
 			    $trend_date = $DB_Array_ref->[$row_counter+2][0];
 			    $high = $DB_Array_ref->[$row_counter+2][1];
-			    print "Three bar trend changed to down on \t$trend_date \t$high (high)\n";
+			    $LogMessage->progress_status( "Three bar trend changed to down on \t$trend_date \t$high (high)");
 			}
 		    }
 		}
