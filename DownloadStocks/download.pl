@@ -44,6 +44,10 @@ use DBI;
 use DateTime;
 use Getopt::Std;
 
+use FindBin qw($RealBin);
+use lib "$RealBin/Message_log";
+use Message_log::DataBase;
+
 #######################################################################
 # This is where is starts                                             #
 # Open config.txt file                                                #
@@ -92,6 +96,7 @@ foreach (@ARGV)
   print "$_\n";
 }
 
+my $LogMessage;
 OpenDatabase($finish_Year, $finish_Month, $finish_Day);
 
 END:
@@ -127,6 +132,9 @@ sub OpenDatabase{
     my $dbh = DBI->connect("DBI:mysql:$database",$user,$pw)
 	or die "Connection error: $DBI::errstr\n";
     
+#Create log object
+    $LogMessage = Message_log::DataBase->new($dbh);
+
     my $sql_command = "select * from url_name where url_id=1";
     my $sth_url_id = $dbh->prepare($sql_command);
     $sth_url_id->execute 
@@ -135,13 +143,14 @@ sub OpenDatabase{
 #count number of rows, should only be one as using yahoo website
     my $rows_count = $sth_url_id->rows;
     if($rows_count != 1){
-	print "Error, was only expecting one row, rows found ->  " . $rows_count . "\n";
+	#print "Error, was only expecting one row, rows found ->  " . $rows_count . "\n";
+	$LogMessage->progress_status("Error, only expecting one row, rows found -> $rows_count");
 	goto END;
     }
 
     my @row = $sth_url_id->fetchrow_array;
     my $yahoo_url = $row[1];
-    print "yahoo_url -> " . $yahoo_url . "\n";
+    $LogMessage->progress_status("yahoo_url -> $yahoo_url");
 
 ###############################
 # Get ticker values from table
@@ -190,14 +199,13 @@ sub OpenDatabase{
 # then assumes that no data has been downloaded for that
 # stock)
 #########################################################
-	print "\n------------------------------------------------------\n";
-
 	while(my @row = $sth_last_date->fetchrow_array){
 	    $start_date = $row[0];
 	}
 
 	if($start_date eq $default_start_date){
-	    print "Latest date is empty so using " . $default_start_date . "\n";
+	    #print "Latest date is empty so using " . $default_start_date . "\n";
+	    $LogMessage->progress_status("Latest date is empty so using $default_start_date ");
 	    $start_date = $default_start_date;
 	}
 	else{
@@ -215,17 +223,20 @@ sub OpenDatabase{
 	
 	my $newDate = $dt->add(days => 1);
 
-	print "Downloading " . ++$stock_progress_counter
-	    ." of $rows_count stocks from database, start date to download from is "
-	    .$newDate->day . "-"
-	    .$newDate->month . "-"
-	    .$newDate->year . "\n";
+	++$stock_progress_counter;
+
+	my $nDay=$newDate->day ;
+	my $nMonth=$newDate->month;
+	my $nYear=$newDate->year;
+	$LogMessage->progress_status("Downloading $stock_progress_counter of \
+                                      $rows_count stocks from database, start date to download \
+                                      from is $nDay-$nMonth-$nYear"); 
 
 	$start_Day   = $newDate->day;
 	$start_Month = $newDate->month;
 	$start_Year  = $newDate->year;
 	
-	print "name -> ". $ticker_name . " ($row[2]) \n";
+	$LogMessage->progress_status("name -> $ticker_name $row[2]"); 
 
 	getYahooData($yahoo_url,
 		     $ticker_name,
@@ -300,13 +311,13 @@ sub getYahooData{
       '&f=' . $finishYear . 
       '&g=d&ignore=.csv';
 
-  print "URL Query -> " . $url_yahoo_csv . "\n";
+  $LogMessage->progress_status("URL Query -> $url_yahoo_csv");
 
   my $response = $ua->get($url_yahoo_csv);
   die "Cannot get url -> $response ......", $response->status_line
     unless($response->is_success);
 
-  print "Opening " . $fileOut . "\n";
+  $LogMessage->progress_status("Opening $fileOut");
 
   unless(open SAVE, '>' . $fileOut){
     die "\nCannot save file\n";
@@ -314,10 +325,10 @@ sub getYahooData{
 
   binmode(SAVE,":utf8");
 
+  #Save data to file
   print SAVE $response->content;
   close SAVE;
-
-  print "Saved " .
-    length($response->content). " bytes of data\n";
+  my $nByteCount = length($response->content);
+  $LogMessage->progress_status("Saved length $nByteCount bytes of data");
 }
 

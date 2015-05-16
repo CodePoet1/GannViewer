@@ -27,41 +27,77 @@ sub new {
 }
 
 
-
 sub db_status {
+    my $sql_command = "SELECT id, type_str from message_log_type where type_str='db status'";
+    my $sth_str = $dbh->prepare($sql_command);
+    $sth_str->execute or die;
+    my @row = $sth_str->fetchrow_array;
+    my $id=$row[0];
+
     print "DB status message -> $_[1]\n";
-}
-
-sub db_error {
-    print "DB error message -> $_[1]\n";
-}
-
-sub system {
-    print "System message -> $_[1]\n";
-}
-
-sub progress_status {
     my $dt = DateTime->now;    
     $dbh->do
 	("INSERT INTO message_log(message_type, timestamp_t, message_string) \
-          VALUES('5','$dt','$_[1]')")
+          VALUES($id,'$dt','$_[1]')")
+	or die;
+}
+
+sub db_error {
+    my $sql_command = "SELECT id, type_str from message_log_type where type_str='db error'";
+    my $sth_str = $dbh->prepare($sql_command);
+    $sth_str->execute or die;
+    my @row = $sth_str->fetchrow_array;
+    my $id=$row[0];
+
+    my $dt = DateTime->now;    
+    $dbh->do
+	("INSERT INTO message_log(message_type, timestamp_t, message_string) \
+          VALUES($id,'$dt','$_[1]')")
+	or die;
+}
+
+sub system {
+    my $sql_command = "SELECT id, type_str from message_log_type where type_str='system status'";
+    my $sth_str = $dbh->prepare($sql_command);
+    $sth_str->execute or die;
+    my @row = $sth_str->fetchrow_array;
+    my $id=$row[0];
+
+    my $dt = DateTime->now;    
+    $dbh->do
+	("INSERT INTO message_log(message_type, timestamp_t, message_string) \
+          VALUES($id,'$dt','$_[1]')")
+	or die;
+}
+
+sub progress_status {
+    my $sql_command = "SELECT id, type_str from message_log_type where type_str='progress status'";
+    my $sth_str = $dbh->prepare($sql_command);
+    $sth_str->execute or die;
+    my @row = $sth_str->fetchrow_array;
+    my $id=$row[0];
+
+    my $dt = DateTime->now;    
+    $dbh->do
+	("INSERT INTO message_log(message_type, timestamp_t, message_string) \
+          VALUES($id,'$dt','$_[1]')")
 	or die;
 }
 
 sub progress_error {
-    print "Progress error message -> $_[1]\n";
+    my $sql_command = "SELECT id, type_str from message_log_type where type_str='progress error'";
+    my $sth_str = $dbh->prepare($sql_command);
+    $sth_str->execute or die;
+    my @row = $sth_str->fetchrow_array;
+    my $id=$row[0];
+
+    my $dt = DateTime->now;    
+    $dbh->do
+	("INSERT INTO message_log(message_type, timestamp_t, message_string) \
+          VALUES($id,'$dt','$_[1]')")
+	or die;
 }
 
 
 
-sub print_message{
-    print "Message received is $_[0] $_[1]\n";
-
-    if ($_[1] eq 'A'){
-	print "Hello A world $_[1]\n";
-    }
-    else {
-	print "Hello B world\n";
-    }
-}
 1;

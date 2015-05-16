@@ -380,17 +380,17 @@ two_day:
         # get yearly values and store in an array
         #
 	$sql_command = qq{select stock_yearly_max.date_year_end, stock_yearly_max.max_price, \
-                               stock_yearly_min.date_year_end, stock_yearly_min.min_price  \
-                               from stock_yearly_max, stock_yearly_min \
-                               where stock_yearly_max.date_year_end = stock_yearly_min.date_year_end \
-                               and stock_yearly_max.ticker_name = $ticker_id and stock_yearly_min.ticker_name = $ticker_id};
+                            stock_yearly_min.date_year_end, stock_yearly_min.min_price  \
+                            from stock_yearly_max, stock_yearly_min \
+                            where stock_yearly_max.date_year_end = stock_yearly_min.date_year_end \
+                            and stock_yearly_max.ticker_name = $ticker_id and \
+                            stock_yearly_min.ticker_name = $ticker_id};
 
 	my $sth_yearly_list = $dbh->prepare($sql_command);
 	$sth_yearly_list->execute();
 	my $yearly_values_list = $sth_yearly_list->fetchall_arrayref();	
 
 #	print Dumper($employees_lol);
-
 	TwoBarTrenIndicator($yearly_values_list);
 	ThreeBarTrendIndicator($yearly_values_list);
 
@@ -422,7 +422,8 @@ sub TwoBarTrenIndicator{
 		    $two_bar_trend_direction_up=1;
 		    $trend_date = $DB_Array_ref->[$row_counter+1][0];
 		    $low = $DB_Array_ref->[$row_counter+1][3];
-		    $LogMessage->progress_status( "Two year trend changed to up on \t$trend_date \t$low (low)");
+		    $LogMessage->progress_status
+                     ("Two year trend changed to up on $trend_date $low (low)");
 		}
 	    }
 	}
@@ -433,7 +434,8 @@ sub TwoBarTrenIndicator{
 		    $two_bar_trend_direction_up=0;
 		    $trend_date = $DB_Array_ref->[$row_counter+1][0];
 		    $high = $DB_Array_ref->[$row_counter+1][1];
-		    $LogMessage->progress_status( "Two year trend changed to down on \t$trend_date \t$high  (high)");
+		    $LogMessage->progress_status
+                     ("Two year trend changed to down on $trend_date $high  (high)");
 		}
 	    }
 	}
@@ -463,11 +465,12 @@ sub ThreeBarTrendIndicator{
 	    if($DB_Array_ref->[$row_counter+1][1] > $DB_Array_ref->[$row_counter][1]){
 		if($DB_Array_ref->[$row_counter+2][1] > $DB_Array_ref->[$row_counter+1][1]){
 		    if($DB_Array_ref->[$row_counter+1][3] > $DB_Array_ref->[$row_counter][3]){
-			if($DB_Array_ref->[$row_counter+2][3] > $DB_Array_ref->[$row_counter+1][3]){
+			if($DB_Array_ref->[$row_counter+2][3] >$DB_Array_ref->[$row_counter+1][3]){
 			    $three_bar_trend_direction_up=1;
 			    $trend_date = $DB_Array_ref->[$row_counter+2][0];
 			    $low = $DB_Array_ref->[$row_counter+2][3];
-			    $LogMessage->progress_status( "Three bar trend changed to up on \t$trend_date \t$low (low)");
+			    $LogMessage->progress_status
+                             ("Three bar trend changed to up on $trend_date $low (low)");
 			}
 		    }
 		}
@@ -477,11 +480,12 @@ sub ThreeBarTrendIndicator{
 	    if($DB_Array_ref->[$row_counter+1][1] < $DB_Array_ref->[$row_counter][1]){
 		if($DB_Array_ref->[$row_counter+2][1] < $DB_Array_ref->[$row_counter+1][1]){
 		    if($DB_Array_ref->[$row_counter+1][3] < $DB_Array_ref->[$row_counter][3]){
-			if($DB_Array_ref->[$row_counter+2][3] < $DB_Array_ref->[$row_counter+1][3]){
+			if($DB_Array_ref->[$row_counter+2][3] <$DB_Array_ref->[$row_counter+1][3]){
 			    $three_bar_trend_direction_up=0;
 			    $trend_date = $DB_Array_ref->[$row_counter+2][0];
 			    $high = $DB_Array_ref->[$row_counter+2][1];
-			    $LogMessage->progress_status( "Three bar trend changed to down on \t$trend_date \t$high (high)");
+			    $LogMessage->progress_status
+                             ("Three bar trend changed to down on $trend_date $high (high)");
 			}
 		    }
 		}
