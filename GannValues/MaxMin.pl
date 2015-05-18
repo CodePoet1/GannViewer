@@ -192,6 +192,7 @@ sub MaxMin{
 	# tables stock_yearly_max and stock_yearly_min can be populated
 	#
 	#
+	$LogMessage->progress_status("Generating stock_yearly_min and stock_yearly_max tables");
 	for(my $year_count = $first_year; $year_count <= $last_year; $year_count++){
 
 	    #Get the maximum value for the year
@@ -247,6 +248,7 @@ sub MaxMin{
 	    my $month_finish=12;
 	    if($year_count==$last_year){$month_finish = $last_month;}
 
+	    $LogMessage->progress_status("Generating stock_monthly_min and stock_monthly_max tables");
 	    for(my $month_count =  $month_initialisation; 
 		   $month_count <= $month_finish; 
                    $month_count++){
@@ -305,6 +307,7 @@ sub MaxMin{
 	    my $week_finish=52;
 	    if($year_count==$last_year){$week_finish = $last_week;}
 
+	    $LogMessage->progress_status("Generating stock_weakly_min and stock_weakly_max tables");
 	    for(my $week_count = $week_initialisation; $week_count<=$week_finish; $week_count++){
 
 		#Get the maximum value for the week
