@@ -18,11 +18,13 @@ To Do Next:
    iii. 2 and 3 weekly
    iv.  2 and 3 daily
 
-2. Add log messages into database
-3. Move to CGI/Web page
+2. Move to CGI/Web page
 
 
 Done
+17/5/2015
+1. Add log messages into database
+
 9/5/2015
 1. Traverse tables and create maximum and minimum entries for;
    i.   yearly

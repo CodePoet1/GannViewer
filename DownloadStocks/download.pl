@@ -97,7 +97,7 @@ foreach (@ARGV)
 }
 
 my $LogMessage;
-OpenDatabase($finish_Year, $finish_Month, $finish_Day);
+DownloadHistoricData($finish_Year, $finish_Month, $finish_Day);
 
 END:
 #end of main routine
@@ -121,7 +121,7 @@ END:
 #                                                                                  #
 ####################################################################################
 ####################################################################################
-sub OpenDatabase{
+sub DownloadHistoricData{
     my $host = "localhost";
     my $database = "GannSelector";
     my $tablename = "url_name";

@@ -59,7 +59,7 @@ foreach (@ARGV)
 }
 
 my $LogMessage;
-OpenDatabase();
+MaxMin();
 
 END:
 #end of main routine
@@ -79,7 +79,7 @@ END:
 #                                                                                  #
 ####################################################################################
 ####################################################################################
-sub OpenDatabase{
+sub MaxMin{
     my $host = "localhost";
     my $database = "GannSelector";
     my $user = "root";
@@ -92,7 +92,7 @@ sub OpenDatabase{
 #Create log object
     $LogMessage = Message_log::DataBase->new($dbh);
 
-    goto two_day;
+   # goto two_day;
 
 
     my $sql_command = "select * from stock_ticker";
