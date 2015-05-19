@@ -193,6 +193,10 @@ sub MaxMin{
 	#
 	#
 	$LogMessage->progress_status("Generating stock_yearly_min and stock_yearly_max tables");
+
+	#flags for making sure message is only sent once to log
+	my ($MonthlyMessageOnce, $WeeklyMessageOnce)=(0,0);
+
 	for(my $year_count = $first_year; $year_count <= $last_year; $year_count++){
 
 	    #Get the maximum value for the year
@@ -236,7 +240,6 @@ sub MaxMin{
                       (ticker_name, date_year_end, max_price, date_last_modified) \
                       VALUES( '$ticker_id', '$db_date_year_end_max', '$db_max_price', '$DateNow')")
 		or die "Could not insert data error: $DBI::errstr\n";
-
             #
             #
             # This routine iterates through each month to populate
@@ -248,7 +251,12 @@ sub MaxMin{
 	    my $month_finish=12;
 	    if($year_count==$last_year){$month_finish = $last_month;}
 
-	    $LogMessage->progress_status("Generating stock_monthly_min and stock_monthly_max tables");
+	    #make sure message is only sent to the log once
+	    if ($MonthlyMessageOnce==0){
+		$LogMessage->progress_status("Generating stock_monthly_min and stock_monthly_max tables");
+		$MonthlyMessageOnce=1;
+	    }
+
 	    for(my $month_count =  $month_initialisation; 
 		   $month_count <= $month_finish; 
                    $month_count++){
@@ -307,7 +315,12 @@ sub MaxMin{
 	    my $week_finish=52;
 	    if($year_count==$last_year){$week_finish = $last_week;}
 
-	    $LogMessage->progress_status("Generating stock_weakly_min and stock_weakly_max tables");
+	    #make sure message is only sent to the log once
+	    if ($WeeklyMessageOnce==0){
+		$LogMessage->progress_status("Generating stock_weakly_min and stock_weakly_max tables");
+		$WeeklyMessageOnce=1;
+	    }
+
 	    for(my $week_count = $week_initialisation; $week_count<=$week_finish; $week_count++){
 
 		#Get the maximum value for the week
