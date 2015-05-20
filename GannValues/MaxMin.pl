@@ -454,6 +454,44 @@ two_and_three_month:
 
     }#while(my @ticker_list_row = $sth_ticker_list->fetchrow_array){
 
+two_and_three_day:
+    #
+    #
+    # Now generate 2 and 3 day generators
+    #
+    #
+    $sql_command = "select * from stock_ticker";
+    $sth_ticker_list = $dbh->prepare($sql_command);
+    $sth_ticker_list->execute 
+	or die "SQL Error: $DBI::errstr\n";
+
+    #    
+    #This lists the index of stocks in the stock_ticker table, an array will be 
+    #generated that can be traversed
+    #
+    $LogMessage->progress_status("Entering routine for two_and_three_day trend value generation - MaxMin.pl");
+    while(my @ticker_list_row = $sth_ticker_list->fetchrow_array){
+	my $ticker_id = $ticker_list_row[0];
+	$LogMessage->progress_status("Ticker_id -> $ticker_id");
+
+        #
+        # get yearly values and store in an array
+        #
+	$sql_command = qq{select stock_prices.date_price, stock_prices.high, \
+                            stock_prices.date_price, stock_prices.low,
+                            stock_prices.ticker_name  \
+                            from stock_prices \
+                            where stock_prices.ticker_name = $ticker_id};
+
+	my $sth_monthly_list = $dbh->prepare($sql_command);
+	$sth_monthly_list->execute();
+	my $monthly_values_list = $sth_monthly_list->fetchall_arrayref();	
+
+#	print Dumper($employees_lol);
+	TwoBarTrenIndicator($monthly_values_list, "day");
+	ThreeBarTrendIndicator($monthly_values_list, "day");
+
+    }#while(my @ticker_list_row = $sth_ticker_list->fetchrow_array){
 
 }
 
