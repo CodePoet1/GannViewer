@@ -405,7 +405,6 @@ two_and_three_year:
 	$sth_yearly_list->execute();
 	my $yearly_values_list = $sth_yearly_list->fetchall_arrayref();	
 
-#	print Dumper($employees_lol);
 	$LogMessage->progress_status("Entering routine for two_and_three_year trend value generation - MaxMin.pl");
 
 	TwoBarTrenIndicator($yearly_values_list,"year");
@@ -448,7 +447,6 @@ two_and_three_month:
 	$sth_monthly_list->execute();
 	my $monthly_values_list = $sth_monthly_list->fetchall_arrayref();	
 
-#	print Dumper($employees_lol);
 	TwoBarTrenIndicator($monthly_values_list, "month");
 	ThreeBarTrendIndicator($monthly_values_list, "month");
 
@@ -486,7 +484,7 @@ two_and_three_day:
 	my $sth_monthly_list = $dbh->prepare($sql_command);
 	$sth_monthly_list->execute();
 	my $monthly_values_list = $sth_monthly_list->fetchall_arrayref();	
-#	print Dumper($employees_lol);
+
 	TwoBarTrenIndicator($monthly_values_list, "day");
 	ThreeBarTrendIndicator($monthly_values_list, "day");
 
