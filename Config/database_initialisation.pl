@@ -214,7 +214,7 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created \n";
 
-#16. Create table message_log_types
+#17. Create table message_log_types
     print "Creating table message_log_type -> ";
     $dbh->do
 	("CREATE TABLE message_log_type( \
@@ -224,7 +224,7 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
-#17. Create table message_log
+#18. Create table message_log
     print "Creating table message_log -> ";
     $dbh->do
 	("CREATE TABLE message_log( \

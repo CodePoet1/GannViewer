@@ -11,8 +11,8 @@
 
 To Do Next:
 
-9/5/2015
-1. Create tables for
+20/5/2015
+1. Insert data into tables for
    i.   2 and 3 yearly
    ii.  2 and 3 monthly
    iii. 2 and 3 weekly
@@ -21,7 +21,17 @@ To Do Next:
 2. Move to CGI/Web page
 
 
+
+===============================================================================
+
 Done
+20/5/2015
+1. Created routines and tables for 
+   i.   2 and 3 yearly
+   ii.  2 and 3 monthly
+   iii. 2 and 3 weekly
+   iv.  2 and 3 daily
+
 17/5/2015
 1. Add log messages into database
 
