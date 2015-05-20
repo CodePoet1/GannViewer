@@ -92,7 +92,7 @@ sub MaxMin{
 #Create log object
     $LogMessage = Message_log::DataBase->new($dbh);
 
-   # goto two_day;
+    goto two_and_three_year;
 
 
     my $sql_command = "select * from stock_ticker";
@@ -370,9 +370,7 @@ sub MaxMin{
 
     }#stock_id routine
 
-
-
-two_day:
+two_and_three_year:
     #
     #
     # Now generate 2 and 3 day generators
@@ -387,7 +385,7 @@ two_day:
     #This lists the index of stocks in the stock_ticker table, an array will be 
     #generated that can be traversed
     #
-    $LogMessage->progress_status("Entering routine for MaxMin value generation - MaxMin.pl");
+    $LogMessage->progress_status("Entering routine for two_and_three_year trend value generation - MaxMin.pl");
     while(my @ticker_list_row = $sth_ticker_list->fetchrow_array){
 	my $ticker_id = $ticker_list_row[0];
 	$LogMessage->progress_status("Ticker_id -> $ticker_id");
@@ -396,7 +394,8 @@ two_day:
         # get yearly values and store in an array
         #
 	$sql_command = qq{select stock_yearly_max.date_year_end, stock_yearly_max.max_price, \
-                            stock_yearly_min.date_year_end, stock_yearly_min.min_price  \
+                            stock_yearly_min.date_year_end, stock_yearly_min.min_price, 
+                            stock_yearly_max.ticker_name \
                             from stock_yearly_max, stock_yearly_min \
                             where stock_yearly_max.date_year_end = stock_yearly_min.date_year_end \
                             and stock_yearly_max.ticker_name = $ticker_id and \
@@ -407,10 +406,55 @@ two_day:
 	my $yearly_values_list = $sth_yearly_list->fetchall_arrayref();	
 
 #	print Dumper($employees_lol);
-	TwoBarTrenIndicator($yearly_values_list);
-	ThreeBarTrendIndicator($yearly_values_list);
+	$LogMessage->progress_status("Entering routine for two_and_three_year trend value generation - MaxMin.pl");
 
-    }
+	TwoBarTrenIndicator($yearly_values_list,"year");
+	ThreeBarTrendIndicator($yearly_values_list,"year");
+
+    }#while(my @ticker_list_row = $sth_ticker_list->fetchrow_array){
+
+two_and_three_month:
+    #
+    #
+    # Now generate 2 and 3 day generators
+    #
+    #
+    $sql_command = "select * from stock_ticker";
+    $sth_ticker_list = $dbh->prepare($sql_command);
+    $sth_ticker_list->execute 
+	or die "SQL Error: $DBI::errstr\n";
+
+    #    
+    #This lists the index of stocks in the stock_ticker table, an array will be 
+    #generated that can be traversed
+    #
+    $LogMessage->progress_status("Entering routine for two_and_three_month trend value generation - MaxMin.pl");
+    while(my @ticker_list_row = $sth_ticker_list->fetchrow_array){
+	my $ticker_id = $ticker_list_row[0];
+	$LogMessage->progress_status("Ticker_id -> $ticker_id");
+
+        #
+        # get yearly values and store in an array
+        #
+	$sql_command = qq{select stock_monthly_max.date_month_end, stock_monthly_max.max_price, \
+                            stock_monthly_min.date_month_end, stock_monthly_min.min_price,
+                            stock_monthly_min.ticker_name  \
+                            from stock_monthly_max, stock_monthly_min \
+                            where stock_monthly_max.date_month_end = stock_monthly_min.date_month_end \
+                            and stock_monthly_max.ticker_name = $ticker_id and \
+                            stock_monthly_min.ticker_name = $ticker_id};
+
+	my $sth_monthly_list = $dbh->prepare($sql_command);
+	$sth_monthly_list->execute();
+	my $monthly_values_list = $sth_monthly_list->fetchall_arrayref();	
+
+#	print Dumper($employees_lol);
+	TwoBarTrenIndicator($monthly_values_list, "month");
+	ThreeBarTrendIndicator($monthly_values_list, "month");
+
+    }#while(my @ticker_list_row = $sth_ticker_list->fetchrow_array){
+
+
 }
 
 
@@ -419,11 +463,13 @@ two_day:
 #
 sub TwoBarTrenIndicator{
     my $DB_Array_ref = $_[0];
+    my $trend_type = $_[1];
     my $size = @$DB_Array_ref;
     my $row_num = $size-1;
     my $trend_date=0;
     my $high=0;
     my $low=0;
+    my $ticker_name=0;
 
     $LogMessage->progress_status( "Two bar Array size is $size");
 
@@ -438,8 +484,9 @@ sub TwoBarTrenIndicator{
 		    $two_bar_trend_direction_up=1;
 		    $trend_date = $DB_Array_ref->[$row_counter+1][0];
 		    $low = $DB_Array_ref->[$row_counter+1][3];
+		    $ticker_name = $DB_Array_ref->[$row_counter+1][4];
 		    $LogMessage->progress_status
-                     ("Two year trend changed to up on $trend_date $low (low)");
+                     ("2$trend_type trend to up $ticker_name, $trend_date, $low (low)");
 		}
 	    }
 	}
@@ -450,8 +497,9 @@ sub TwoBarTrenIndicator{
 		    $two_bar_trend_direction_up=0;
 		    $trend_date = $DB_Array_ref->[$row_counter+1][0];
 		    $high = $DB_Array_ref->[$row_counter+1][1];
+		    $ticker_name = $DB_Array_ref->[$row_counter+1][4];
 		    $LogMessage->progress_status
-                     ("Two year trend changed to down on $trend_date $high  (high)");
+                     ("2$trend_type trend to down on $ticker_name, $trend_date, $high  (high)");
 		}
 	    }
 	}
@@ -464,11 +512,13 @@ sub TwoBarTrenIndicator{
 #
 sub ThreeBarTrendIndicator{
     my $DB_Array_ref = $_[0];
+    my $trend_type = $_[1];
     my $size = @$DB_Array_ref;
     my $row_num = $size-1;
     my $trend_date=0;
     my $high=0;
     my $low=0;
+    my $ticker_name=0;
 
     $LogMessage->progress_status( "Three bar Array size is $size");
 
@@ -485,8 +535,9 @@ sub ThreeBarTrendIndicator{
 			    $three_bar_trend_direction_up=1;
 			    $trend_date = $DB_Array_ref->[$row_counter+2][0];
 			    $low = $DB_Array_ref->[$row_counter+2][3];
+			    $ticker_name = $DB_Array_ref->[$row_counter+2][4];
 			    $LogMessage->progress_status
-                             ("Three bar trend changed to up on $trend_date $low (low)");
+                             ("3$trend_type trend to up on $ticker_name, $trend_date, $low (low)");
 			}
 		    }
 		}
@@ -500,8 +551,9 @@ sub ThreeBarTrendIndicator{
 			    $three_bar_trend_direction_up=0;
 			    $trend_date = $DB_Array_ref->[$row_counter+2][0];
 			    $high = $DB_Array_ref->[$row_counter+2][1];
+			    $ticker_name = $DB_Array_ref->[$row_counter+2][4];
 			    $LogMessage->progress_status
-                             ("Three bar trend changed to down on $trend_date $high (high)");
+                             ("3$trend_type trend to down on $ticker_name, $trend_date, $high (high)");
 			}
 		    }
 		}
