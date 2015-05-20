@@ -70,7 +70,7 @@ sub OpenDatabase{
     $dbh->do
 	("create table stock_prices( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
-          ticker_name INT(10) UNSIGNED, \
+          ticker_name INT NOT NULL, \
           date_price DATE, \
           open DECIMAL(9,2), \
           high DECIMAL(9,2), \
@@ -78,7 +78,8 @@ sub OpenDatabase{
           close DECIMAL(9,2), \
           volume INT(10) UNSIGNED, \
           adjclose DECIMAL(9,2), \
-          date_last_modified DATE)")
+          date_last_modified DATE, \
+          foreign key (ticker_name) references stock_ticker(id))")
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
@@ -96,9 +97,10 @@ sub OpenDatabase{
     $dbh->do
 	("create table gann_levels( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
-          ticker_name INT(10) UNSIGNED, \
+          ticker_name INT NOT NULL, \
           gann_level_type INT(3) UNSIGNED, \
-          price DECIMAL(9,2))")
+          price DECIMAL(9,2), \
+          foreign key (ticker_name) references stock_ticker(id))")
 	or die "table gann_level_type error: $DBI::errstr\n";
     print("created\n");
 
@@ -107,11 +109,12 @@ sub OpenDatabase{
     $dbh->do
 	("create table stock_yearly_max( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
-          ticker_name INT(10) UNSIGNED, \
+          ticker_name INT NOT NULL, \
           date_year_end DATE, \
           date_price DATE, \
           max_price DECIMAL(9,2), \
-          date_last_modified DATE)")
+          date_last_modified DATE, \
+          foreign key (ticker_name) references stock_ticker(id))")
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
@@ -120,11 +123,12 @@ sub OpenDatabase{
     $dbh->do
 	("create table stock_yearly_min( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
-          ticker_name INT(10) UNSIGNED, \
+          ticker_name INT NOT NULL, \
           date_year_end DATE, \
           date_price DATE, \
           min_price DECIMAL(9,2), \
-          date_last_modified DATE)")
+          date_last_modified DATE, \
+          foreign key (ticker_name) references stock_ticker(id))")
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
@@ -133,11 +137,12 @@ sub OpenDatabase{
     $dbh->do
 	("create table stock_monthly_max( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
-          ticker_name INT(10) UNSIGNED, \
+          ticker_name INT NOT NULL, \
           date_month_end DATE, \
           date_price DATE, \
           max_price DECIMAL(9,2), \
-          date_last_modified DATE)")
+          date_last_modified DATE, \
+          foreign key (ticker_name) references stock_ticker(id))")
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
@@ -146,11 +151,12 @@ sub OpenDatabase{
     $dbh->do
 	("create table stock_monthly_min( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
-          ticker_name INT(10) UNSIGNED, \
+          ticker_name INT NOT NULL, \
           date_month_end DATE, \
           date_price DATE, \
           min_price DECIMAL(9,2), \
-          date_last_modified DATE)")
+          date_last_modified DATE, \
+          foreign key (ticker_name) references stock_ticker(id))")
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
@@ -159,11 +165,12 @@ sub OpenDatabase{
     $dbh->do
 	("create table stock_weekly_max( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
-          ticker_name INT(10) UNSIGNED, \
+          ticker_name INT NOT NULL, \
           date_week_end DATE, \
           date_price DATE, \
           max_price DECIMAL(9,2), \
-          date_last_modified DATE)")
+          date_last_modified DATE, \
+          foreign key (ticker_name) references stock_ticker(id))")
 	or die "table creation error: $DBI::errstr\n";
     print "created \n";
 
@@ -172,15 +179,42 @@ sub OpenDatabase{
     $dbh->do
 	("create table stock_weekly_min( \
           id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
-          ticker_name INT(10) UNSIGNED, \
+          ticker_name INT NOT NULL, \
           date_week_end DATE, \
           date_price DATE, \
           min_price DECIMAL(9,2), \
-          date_last_modified DATE)")
+          date_last_modified DATE, \
+          foreign key (ticker_name) references stock_ticker(id))")
 	or die "table creation error: $DBI::errstr\n";
     print "created \n";
 
-#15. Create table message_log_types
+#15. Create table trend_indicator_type
+    print "Creating table trend_indicator_type -> ";
+    $dbh->do
+	("CREATE TABLE trend_indicator_type( \
+          id INT NOT NULL AUTO_INCREMENT, \
+          type_str CHAR(8) NOT NULL, \
+          primary key (id))")
+	or die "table creation error: $DBI::errstr\n";
+    print "created\n";
+
+#16. Create table trend indicator
+    print "Creating table trend_indicator -> ";
+    $dbh->do
+	("create table trend_indicator( \
+          id INT NOT NULL AUTO_INCREMENT, \
+          ticker_name INT NOT NULL, \
+          trend_type INT NOT NULL, \
+          date_trend_change DATE, \
+          price DECIMAL(9,2), \
+          date_last_modified DATE, \
+          primary key (id), \
+          foreign key (trend_type) references trend_indicator_type(id), \
+          foreign key (ticker_name) references stock_ticker(id)) ")
+	or die "table creation error: $DBI::errstr\n";
+    print "created \n";
+
+#16. Create table message_log_types
     print "Creating table message_log_type -> ";
     $dbh->do
 	("CREATE TABLE message_log_type( \
@@ -190,7 +224,7 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
-#16. Create table message_log
+#17. Create table message_log
     print "Creating table message_log -> ";
     $dbh->do
 	("CREATE TABLE message_log( \
@@ -255,7 +289,17 @@ sub OpenDatabase{
           ('progress error ')")
 	or die "table insertion error: $DBI::errstr\n";
     print "inserted\n";         
-          
+   
+#104. Insert types into trend_indicator_types
+    print "Insert types into trend_indicator_types -> ";
+    $dbh->do
+	("INSERT INTO trend_indicator_type(
+          type_str)
+          VALUES
+          ('UP'),
+          ('DOWN')")
+	or die "table insertion error: $DBI::errstr\n";
+    print "inserted\n";
           
 }
 
