@@ -312,6 +312,7 @@ sub getYahooData{
       '&g=d&ignore=.csv';
 
   $LogMessage->progress_status("URL Query -> $url_yahoo_csv");
+  print "URL Query -> $url_yahoo_csv \n";
 
   my $response = $ua->get($url_yahoo_csv);
   die "Cannot get url -> $response ......", $response->status_line

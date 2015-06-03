@@ -51,7 +51,10 @@ sub OpenDatabase{
 #5. Create table url_name
     print "Creating table url_name -> ";
     $dbh->do
-	("create table url_name(url_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, url_str varchar(250))")
+	("create table url_name( \
+          url_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, \
+          url_str varchar(250),
+          url_description_str varchar(250))")
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
@@ -188,7 +191,17 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created \n";
 
-#15. Create table trend_indicator_type
+#15. Create table trend_indicator_direction
+    print "Creating table trend_indicator_direction -> ";
+    $dbh->do
+	("CREATE TABLE trend_indicator_direction( \
+          id INT NOT NULL AUTO_INCREMENT, \
+          type_str CHAR(8) NOT NULL, \
+          primary key (id))")
+	or die "table creation error: $DBI::errstr\n";
+    print "created\n";
+
+#16. Create table trend_indicator_type
     print "Creating table trend_indicator_type -> ";
     $dbh->do
 	("CREATE TABLE trend_indicator_type( \
@@ -198,23 +211,26 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
-#16. Create table trend indicator
+
+#17. Create table trend indicator
     print "Creating table trend_indicator -> ";
     $dbh->do
 	("create table trend_indicator( \
           id INT NOT NULL AUTO_INCREMENT, \
           ticker_name INT NOT NULL, \
           trend_type INT NOT NULL, \
+          trend_direction INT NOT NULL, \
           date_trend_change DATE, \
           price DECIMAL(9,2), \
           date_last_modified DATE, \
           primary key (id), \
           foreign key (trend_type) references trend_indicator_type(id), \
+          foreign key (trend_direction) references trend_indicator_direction(id), \
           foreign key (ticker_name) references stock_ticker(id)) ")
 	or die "table creation error: $DBI::errstr\n";
     print "created \n";
 
-#17. Create table message_log_types
+#18. Create table message_log_types
     print "Creating table message_log_type -> ";
     $dbh->do
 	("CREATE TABLE message_log_type( \
@@ -224,7 +240,7 @@ sub OpenDatabase{
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
 
-#18. Create table message_log
+#19. Create table message_log
     print "Creating table message_log -> ";
     $dbh->do
 	("CREATE TABLE message_log( \
@@ -247,7 +263,9 @@ sub OpenDatabase{
 
 #100. Insert data into url_name
     print "Inserting test data into url_name -> ";
-    $dbh->do("INSERT INTO url_name (url_str) VALUES('http://ichart.finance.yahoo.com/table.csv?s=')")
+    $dbh->do("INSERT INTO url_name (url_str, url_description_str) 
+             VALUES('http://ichart.finance.yahoo.com/table.csv?s=','Yahoo Finance Historical Prices'), \
+                   ('http://real-chart.finance.yahoo.com/table.csv?s=','Yahoo Finance Historical Prices (Alternative)')")
 	or die "table creation error: $DBI::errstr\n";
     print("inserted\n");
 
@@ -290,10 +308,25 @@ sub OpenDatabase{
 	or die "table insertion error: $DBI::errstr\n";
     print "inserted\n";         
    
-#104. Insert types into trend_indicator_types
-    print "Insert types into trend_indicator_types -> ";
+#104. Insert types into trend_indicator_type
+    print "Insert types into trend_indicator_type -> ";
     $dbh->do
 	("INSERT INTO trend_indicator_type(
+          type_str)
+          VALUES
+          ('2 day'),
+          ('2 month'),
+          ('2 year'),
+          ('3 day'),
+          ('3 month'),
+          ('3 year')")
+	or die "table insertion error: $DBI::errstr\n";
+    print "inserted\n";
+
+#105. Insert types into trend_indicator_direction
+    print "Insert types into trend_indicator_direction -> ";
+    $dbh->do
+	("INSERT INTO trend_indicator_direction(
           type_str)
           VALUES
           ('UP'),

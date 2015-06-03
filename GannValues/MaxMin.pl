@@ -522,10 +522,15 @@ sub TwoBarTrenIndicator{
 		    $ticker_name = $DB_Array_ref->[$row_counter+1][4];
 		    $LogMessage->progress_status
                      ("2$trend_type trend to up $ticker_name, $trend_date, $low (low)");
+		    if($trend_type eq "day"){
+		    }
+		    elsif($trend_type eq "month"){
+		    }
+		    elsif($trend_type eq "year"){
+		    }
 		}
 	    }
 	}
-	
 	elsif ($two_bar_trend_direction_up == 1){
 	    if($DB_Array_ref->[$row_counter+1][1] < $DB_Array_ref->[$row_counter][1]){
 		if($DB_Array_ref->[$row_counter+1][3] < $DB_Array_ref->[$row_counter][3]){

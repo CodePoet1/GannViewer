@@ -11,6 +11,22 @@
 
 To Do Next:
 
+2. Amend message_log to add field "stock_ticker"
+3. Add values to message_log_type to include;
+   i.    "2day up"
+   ii.   "2day down"
+   iii.  "3day up"
+   iv.   "3day down"
+   v.    "2month up"
+   vi.   "2month down"
+   vii.  "3month up"
+   viii. "3month down"
+   ix.   "2year up"
+   x.    "2year down"
+   xi.   "3year up"
+   xii.  "3year down"
+
+
 20/5/2015
 1. Insert data into tables for
    i.   2 and 3 yearly
@@ -25,6 +41,10 @@ To Do Next:
 ===============================================================================
 
 Done
+2/6/2015
+1. Create trend indicator tables with trend_type for two_day, two_month etc, and 
+   trend_direction for UP or DOWN
+
 20/5/2015
 1. Created routines and tables for 
    i.   2 and 3 yearly
