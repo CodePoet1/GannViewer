@@ -247,8 +247,10 @@ sub OpenDatabase{
           id INT NOT NULL AUTO_INCREMENT,\
           message_type INT NOT NULL, \
           timestamp_t DATETIME, \
+          ticker_name INT NOT NULL, \
           message_string VARCHAR(255) NOT NULL, \
           primary key (id), \
+          foreign key (ticker_name) references stock_ticker(id), \
           foreign key (message_type) references message_log_type(id)) ")
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
@@ -272,7 +274,8 @@ sub OpenDatabase{
 #101. Insert data into stock_ticker
     print "Inserting test data into stock_ticker -> ";
     $dbh->do("INSERT INTO stock_ticker (ticker_name, description) \
-             VALUES('BP.L','BP UK'), \
+             VALUES('NULL','no ticker'), \
+                   ('BP.L','BP UK'), \
                    ('%5EFTSE','FTSE100 UK'), \
                    ('BT','British Telecom UK'), \
                    ('ARM.L','ARM UK'), \

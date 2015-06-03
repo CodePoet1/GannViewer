@@ -144,13 +144,13 @@ sub DownloadHistoricData{
     my $rows_count = $sth_url_id->rows;
     if($rows_count != 1){
 	#print "Error, was only expecting one row, rows found ->  " . $rows_count . "\n";
-	$LogMessage->progress_status("Error, only expecting one row, rows found -> $rows_count");
+	$LogMessage->progress_status(1,"Error, only expecting one row, rows found -> $rows_count");
 	goto END;
     }
 
     my @row = $sth_url_id->fetchrow_array;
     my $yahoo_url = $row[1];
-    $LogMessage->progress_status("yahoo_url -> $yahoo_url");
+    $LogMessage->progress_status(1,"yahoo_url -> $yahoo_url");
 
 ###############################
 # Get ticker values from table
@@ -175,7 +175,8 @@ sub DownloadHistoricData{
     my $finish_Year  = $_[0];
     my $outfile = "tony.csv";
     my $stock_progress_counter = 0;
-    
+    my @dummy_row = $sth_ticker_list->fetchrow_array; #dummy grab of row as first row is NULL
+
     while(@row = $sth_ticker_list->fetchrow_array){
 	my $ticker_name = $row[1];
 	my $ticker_id = $row[0];

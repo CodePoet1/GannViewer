@@ -79,8 +79,8 @@ sub progress_status {
 
     my $dt = DateTime->now;    
     $dbh->do
-	("INSERT INTO message_log(message_type, timestamp_t, message_string) \
-          VALUES($id,'$dt','$_[1]')")
+	("INSERT INTO message_log(message_type, timestamp_t, ticker_name, message_string) \
+          VALUES($id,'$dt',1,'$_[1]')") #'1' is default for null in ticker_name
 	or die;
 }
 
@@ -93,8 +93,8 @@ sub progress_error {
 
     my $dt = DateTime->now;    
     $dbh->do
-	("INSERT INTO message_log(message_type, timestamp_t, message_string) \
-          VALUES($id,'$dt','$_[1]')")
+	("INSERT INTO message_log(message_type, timestamp_t, ticker_name, message_string) \
+          VALUES($id,'$dt',1,'$_[2]')")
 	or die;
 }
 
