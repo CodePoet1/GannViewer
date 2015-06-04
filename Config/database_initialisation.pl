@@ -307,7 +307,23 @@ sub OpenDatabase{
           ('db error '),
           ('system status '),
           ('progress status '),
-          ('progress error ')")
+          ('progress error '),
+          ('two_day_up'),
+          ('two_day_down'),
+          ('three_day_up'),
+          ('three_day_down'),
+          ('two_week_up'),
+          ('two_week_down'),
+          ('three_week_up'),
+          ('three_week_down'),
+          ('two_month_up'),
+          ('two_month_down'),
+          ('three_month_up'),
+          ('three_month_down'),
+          ('two_year_up'),
+          ('two_year_down'),
+          ('three_year_up'),
+          ('three_year_down')")
 	or die "table insertion error: $DBI::errstr\n";
     print "inserted\n";         
    

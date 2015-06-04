@@ -523,6 +523,9 @@ sub TwoBarTrenIndicator{
 		    $LogMessage->progress_status
                      ("2$trend_type trend to up $ticker_name, $trend_date, $low (low)");
 		    if($trend_type eq "day"){
+			message_log_trend_two_day_up($ticker_name, $trend_date);
+		    }
+		    elsif($trend_type eq "week"){
 		    }
 		    elsif($trend_type eq "month"){
 		    }
