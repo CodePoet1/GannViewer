@@ -98,20 +98,7 @@ sub progress_error {
 	or die;
 }
 
-sub message_log_trend_two_day_up{ #$_[0]=ticker_name, $_[1]=date,
-    my $sql_command = "SELECT id, type_str from message_log_type where type_str='two_day_up'";
-    my $sth_str = $dbh->prepare($sql_command);
-    $sth_str->execute or die;
-    my @row = $sth_str->fetchrow_array;
-    my $id=$row[0];
 
-    my $dt = DateTime->now;    
-    $dbh->do
-	("INSERT INTO message_log(message_type, timestamp_t, ticker_name, message_string) \
-          VALUES($id,'$dt',$_[0],'trend moved up on $_[1]')")
-	or die;
-
-}
 
 
 1;
