@@ -101,7 +101,7 @@ sub MaxMin{
 #Create log object
     $LogMessage = Message_log::DataBase->new($dbh);
 
-    goto two_and_three_year;
+#    goto two_and_three_year;
 
 
     my $sql_command = "select * from stock_ticker";
@@ -138,8 +138,11 @@ sub MaxMin{
 #This lists the index of stocks in the stock_ticker table, an array will be 
 #generated that can be traversed
 #
+    my @row_dummy = $sth_ticker_list->fetchrow_array;
+
     while(my @row = $sth_ticker_list->fetchrow_array){
 	my $ticker_id = $row[0];
+	print "ticker_id -> $ticker_id\n";
 
 	#Get the earliest price date we have of this stock
 	$sql_command = "select min(stock_prices.date_price) \
@@ -514,6 +517,7 @@ sub TwoBarTrenIndicator{
     my $high=0;
     my $low=0;
     my $ticker_name=0;
+    print "Trend ->  $trend_type\n";
 
     $LogMessage->progress_status( "Two bar Array size is $size");
 
@@ -530,35 +534,83 @@ sub TwoBarTrenIndicator{
 		    $low = $DB_Array_ref->[$row_counter+1][3];
 		    $ticker_name = $DB_Array_ref->[$row_counter+1][4];
 		    if($trend_type eq "day"){
+			print "day\n";
+                        #Update trend_indicator for UP
+			#Get type_str for indicator_type
+			my $dt = DateTime->now;    
  			my $sql_command = "SELECT id, type_str \
-                                           from message_log_type \
-                                           where type_str='two_day_up'";
+                                           from trend_indicator_type \
+                                           where type_str='two day'";
 			my $sth_str = $dbh->prepare($sql_command);
 			$sth_str->execute or die;
-			my @row = $sth_str->fetchrow_array;
-			my $id=$row[0];
-			
-			my $dt = DateTime->now;    
-			$dbh->do("INSERT INTO message_log(message_type, timestamp_t, ticker_name, \
-                             message_string) \
-                             VALUES($id,'$dt',$ticker_name,\
-                                    'Two day trend moved up on $trend_date')")
+			my @row_type = $sth_str->fetchrow_array;
+			my $indicator_type=$row_type[0];
+
+			#Get trend_direction for indicator_type
+ 			$sql_command = "SELECT id, type_str \
+                                           from trend_indicator_direction \
+                                           where type_str='UP'";
+			$sth_str = $dbh->prepare($sql_command);
+			$sth_str->execute or die;
+			my @row_dir = $sth_str->fetchrow_array;
+			my $indicator_direction = $row_dir[0];
+
+			$dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
+                                  trend_direction, date_trend_change, price, date_last_modified) \
+                             VALUES($ticker_name, $indicator_type, $indicator_direction, \
+                                    '$trend_date', $low,'$dt')")
 			    or die;
+
 		    }
 		    elsif($trend_type eq "week"){
+			print "week\n";
+# 			my $sql_command = "SELECT id, type_str \
+#                                           from message_log_type \
+#                                           where type_str='two_week_up'";
+#			my $sth_str = $dbh->prepare($sql_command);
+#			$sth_str->execute or die;
+#			my @row = $sth_str->fetchrow_array;
+#			my $id=$row[0];
+			
+#			my $dt = DateTime->now;    
+#			$dbh->do("INSERT INTO message_log(message_type, timestamp_t, ticker_name, \
+#                             message_string) \
+#                             VALUES($id,'$dt',$ticker_name,\
+#                                    'Two week trend moved up on $trend_date')")
+#			    or die;
+#			#Get trend_direction for indicator_type
+# 			$sql_command = "SELECT id, type_str \
+#                                           from trend_indicator_direction \
+#                                           where type_str='UP'";
+#			$sth_str = $dbh->prepare($sql_command);
+#			$sth_str->execute or die;
+#			my @row_dir = $sth_str->fetchrow_array;
+#			my $indicator_direction = $row_dir[0];
+
+			#Update trend_indicator for UP
+			#Get type_str for indicator_type
+			my $dt = DateTime->now;    
  			my $sql_command = "SELECT id, type_str \
-                                           from message_log_type \
+                                           from trend_indicator_type \
                                            where type_str='two_week_up'";
 			my $sth_str = $dbh->prepare($sql_command);
 			$sth_str->execute or die;
-			my @row = $sth_str->fetchrow_array;
-			my $id=$row[0];
-			
-			my $dt = DateTime->now;    
-			$dbh->do("INSERT INTO message_log(message_type, timestamp_t, ticker_name, \
-                             message_string) \
-                             VALUES($id,'$dt',$ticker_name,\
-                                    'Two week trend moved up on $trend_date')")
+			my @row_type = $sth_str->fetchrow_array;
+			my $indicator_type=$row_type[0];
+
+			#Get trend_direction for indicator_type
+ 			$sql_command = "SELECT id, type_str \
+                                           from trend_indicator_direction \
+                                           where type_str='UP'";
+			$sth_str = $dbh->prepare($sql_command);
+			$sth_str->execute or die;
+			my @row_dir = $sth_str->fetchrow_array;
+			my $indicator_direction = $row_dir[0];
+
+			$dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
+                                  trend_direction, date_trend_change, price, date_last_modified) \
+                             VALUES($ticker_name, $indicator_type, $indicator_direction, \
+                                    '$trend_date', $low,'$dt')")
 			    or die;
 		    }
 		    elsif($trend_type eq "month"){
@@ -605,67 +657,157 @@ sub TwoBarTrenIndicator{
 		    $high = $DB_Array_ref->[$row_counter+1][1];
 		    $ticker_name = $DB_Array_ref->[$row_counter+1][4];
 		    if($trend_type eq "day"){
+			#Update trend_indicator for DOWN
+			#Get type_str for indicator_type
+			my $dt = DateTime->now;    
  			my $sql_command = "SELECT id, type_str \
-                                           from message_log_type \
-                                           where type_str='two_day_down'";
+                                           from trend_indicator_type \
+                                           where type_str='two day'";
 			my $sth_str = $dbh->prepare($sql_command);
 			$sth_str->execute or die;
-			my @row = $sth_str->fetchrow_array;
-			my $id=$row[0];
-			
-			my $dt = DateTime->now;    
-			$dbh->do("INSERT INTO message_log(message_type, timestamp_t, ticker_name, \
-                             message_string) \
-                             VALUES($id,'$dt',$ticker_name,\
-                                    'Two day trend moved down on $trend_date')")
+			my @row_type = $sth_str->fetchrow_array;
+			my $indicator_type=$row_type[0];
+
+			#Get trend_direction for indicator_type
+ 			$sql_command = "SELECT id, type_str \
+                                           from trend_indicator_direction \
+                                           where type_str='DOWN'";
+			$sth_str = $dbh->prepare($sql_command);
+			$sth_str->execute or die;
+			my @row_dir = $sth_str->fetchrow_array;
+			my $indicator_direction = $row_dir[0];
+
+			$dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
+                                  trend_direction, date_trend_change, price, date_last_modified) \
+                             VALUES($ticker_name, $indicator_type, $indicator_direction, \
+                                    '$trend_date', $high,'$dt')")
 			    or die;
+
+
 		    }
 		    elsif($trend_type eq "week"){
+# 			my $sql_command = "SELECT id, type_str \
+#                                           from message_log_type \
+#                                           where type_str='two_week_down'";
+#			my $sth_str = $dbh->prepare($sql_command);
+#			$sth_str->execute or die;
+#			my @row = $sth_str->fetchrow_array;
+#			my $id=$row[0];
+#			
+#			my $dt = DateTime->now;    
+#			$dbh->do("INSERT INTO message_log(message_type, timestamp_t, ticker_name, \
+ #                            message_string) \
+  #                           VALUES($id,'$dt',$ticker_name,\
+   #                                 'Two week trend moved down on $trend_date')")
+#			    or die;
+			#Update trend_indicator for DOWN
+			#Get type_str for indicator_type
+			my $dt = DateTime->now;    
  			my $sql_command = "SELECT id, type_str \
-                                           from message_log_type \
-                                           where type_str='two_week_down'";
+                                           from trend_indicator_type \
+                                           where type_str='two week'";
 			my $sth_str = $dbh->prepare($sql_command);
 			$sth_str->execute or die;
-			my @row = $sth_str->fetchrow_array;
-			my $id=$row[0];
-			
-			my $dt = DateTime->now;    
-			$dbh->do("INSERT INTO message_log(message_type, timestamp_t, ticker_name, \
-                             message_string) \
-                             VALUES($id,'$dt',$ticker_name,\
-                                    'Two week trend moved down on $trend_date')")
+			my @row_type = $sth_str->fetchrow_array;
+			my $indicator_type=$row_type[0];
+
+			#Get trend_direction for indicator_type
+ 			$sql_command = "SELECT id, type_str \
+                                           from trend_indicator_direction \
+                                           where type_str='DOWN'";
+			$sth_str = $dbh->prepare($sql_command);
+			$sth_str->execute or die;
+			my @row_dir = $sth_str->fetchrow_array;
+			my $indicator_direction = $row_dir[0];
+
+			$dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
+                                  trend_direction, date_trend_change, price, date_last_modified) \
+                             VALUES($ticker_name, $indicator_type, $indicator_direction, \
+                                    '$trend_date', $high,'$dt')")
 			    or die;
+
 		    }
 		    elsif($trend_type eq "month"){
+# 			my $sql_command = "SELECT id, type_str \
+#                                           from message_log_type \
+#                                           where type_str='two_month_down'";
+#			my $sth_str = $dbh->prepare($sql_command);
+#			$sth_str->execute or die;
+#			my @row = $sth_str->fetchrow_array;
+#			my $id=$row[0];
+#			
+#			my $dt = DateTime->now;    
+#			$dbh->do("INSERT INTO message_log(message_type, timestamp_t, ticker_name, \
+ #                            message_string) \
+  #                           VALUES($id,'$dt',$ticker_name,\
+   #                                 'Two month trend moved down on $trend_date')")
+#			    or die;
+			#Update trend_indicator for DOWN
+			#Get type_str for indicator_type
+			my $dt = DateTime->now;    
  			my $sql_command = "SELECT id, type_str \
-                                           from message_log_type \
-                                           where type_str='two_month_down'";
+                                           from trend_indicator_type \
+                                           where type_str='two month'";
 			my $sth_str = $dbh->prepare($sql_command);
 			$sth_str->execute or die;
-			my @row = $sth_str->fetchrow_array;
-			my $id=$row[0];
-			
-			my $dt = DateTime->now;    
-			$dbh->do("INSERT INTO message_log(message_type, timestamp_t, ticker_name, \
-                             message_string) \
-                             VALUES($id,'$dt',$ticker_name,\
-                                    'Two month trend moved down on $trend_date')")
+			my @row_type = $sth_str->fetchrow_array;
+			my $indicator_type=$row_type[0];
+			print "Trend type -> $indicator_type\n";
+
+			#Get trend_direction for indicator_type
+ 			$sql_command = "SELECT id, type_str \
+                                           from trend_indicator_direction \
+                                           where type_str='DOWN'";
+			$sth_str = $dbh->prepare($sql_command);
+			$sth_str->execute or die;
+			my @row_dir = $sth_str->fetchrow_array;
+			my $indicator_direction = $row_dir[0];
+
+			$dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
+                                  trend_direction, date_trend_change, price, date_last_modified) \
+                             VALUES($ticker_name, $indicator_type, $indicator_direction, \
+                                    '$trend_date', $high,'$dt')")
 			    or die;
 		    }
 		    elsif($trend_type eq "year"){
+# 			my $sql_command = "SELECT id, type_str \
+#                                           from message_log_type \
+#                                           where type_str='two_year_down'";
+#			my $sth_str = $dbh->prepare($sql_command);
+#			$sth_str->execute or die;
+#			my @row = $sth_str->fetchrow_array;
+#			my $id=$row[0];
+#			
+#			my $dt = DateTime->now;    
+#			$dbh->do("INSERT INTO message_log(message_type, timestamp_t, ticker_name, \
+#                             message_string) \
+#                             VALUES($id,'$dt',$ticker_name,\
+#                                    'Two year trend moved down on $trend_date')")
+#			    or die;
+			#Update trend_indicator for DOWN
+			#Get type_str for indicator_type
+			my $dt = DateTime->now;    
  			my $sql_command = "SELECT id, type_str \
-                                           from message_log_type \
-                                           where type_str='two_year_down'";
+                                           from trend_indicator_type \
+                                           where type_str='two year'";
 			my $sth_str = $dbh->prepare($sql_command);
 			$sth_str->execute or die;
-			my @row = $sth_str->fetchrow_array;
-			my $id=$row[0];
-			
-			my $dt = DateTime->now;    
-			$dbh->do("INSERT INTO message_log(message_type, timestamp_t, ticker_name, \
-                             message_string) \
-                             VALUES($id,'$dt',$ticker_name,\
-                                    'Two year trend moved down on $trend_date')")
+			my @row_type = $sth_str->fetchrow_array;
+			my $indicator_type=$row_type[0];
+
+			#Get trend_direction for indicator_type
+ 			$sql_command = "SELECT id, type_str \
+                                           from trend_indicator_direction \
+                                           where type_str='DOWN'";
+			$sth_str = $dbh->prepare($sql_command);
+			$sth_str->execute or die;
+			my @row_dir = $sth_str->fetchrow_array;
+			my $indicator_direction = $row_dir[0];
+
+			$dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
+                                  trend_direction, date_trend_change, price, date_last_modified) \
+                             VALUES($ticker_name, $indicator_type, $indicator_direction, \
+                                    '$trend_date', $high,'$dt')")
 			    or die;
 		    }
 		}

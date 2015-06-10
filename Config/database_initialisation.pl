@@ -206,7 +206,7 @@ sub OpenDatabase{
     $dbh->do
 	("CREATE TABLE trend_indicator_type( \
           id INT NOT NULL AUTO_INCREMENT, \
-          type_str CHAR(8) NOT NULL, \
+          type_str CHAR(32) NOT NULL, \
           primary key (id))")
 	or die "table creation error: $DBI::errstr\n";
     print "created\n";
@@ -333,12 +333,12 @@ sub OpenDatabase{
 	("INSERT INTO trend_indicator_type(
           type_str)
           VALUES
-          ('2 day'),
-          ('2 month'),
-          ('2 year'),
-          ('3 day'),
-          ('3 month'),
-          ('3 year')")
+          ('two day'),
+          ('two month'),
+          ('two year'),
+          ('three day'),
+          ('three month'),
+          ('three year')")
 	or die "table insertion error: $DBI::errstr\n";
     print "inserted\n";
 
