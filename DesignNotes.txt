@@ -26,6 +26,9 @@ To Do Next:
    xi.   "3year up"
    xii.  "3year down"
 
+3. Need to add trap in downloads.pl to stop it trying to download a stock whose
+   start and end dates are the same.  Website returns an error message when this
+   is done.
 
 20/5/2015
 1. Insert data into tables for

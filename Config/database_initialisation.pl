@@ -334,9 +334,11 @@ sub OpenDatabase{
           type_str)
           VALUES
           ('two day'),
+          ('two week'),
           ('two month'),
           ('two year'),
           ('three day'),
+          ('three week'),
           ('three month'),
           ('three year')")
 	or die "table insertion error: $DBI::errstr\n";
