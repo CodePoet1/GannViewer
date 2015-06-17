@@ -565,142 +565,154 @@ sub TwoBarTrenIndicator{
     #
     my $two_bar_trend_direction_up = 0;
     for(my $row_counter=0; $row_counter<($row_num); $row_counter++){
-	if ($two_bar_trend_direction_up == 0){
-	    if($DB_Array_ref->[$row_counter+1][1] > $DB_Array_ref->[$row_counter][1]){
-		if($DB_Array_ref->[$row_counter+1][3] > $DB_Array_ref->[$row_counter][3]){
-		    $two_bar_trend_direction_up=1;
-		    $trend_date = $DB_Array_ref->[$row_counter+1][0];
-		    $low = $DB_Array_ref->[$row_counter+1][3];
-		    $ticker_name = $DB_Array_ref->[$row_counter+1][4];
-		    if($trend_type eq "day"){
-			#
-                        #trend is -> two_day, up
-			#
-                        #Update trend_indicator for UP
+	if ($two_bar_trend_direction_up == 0){ #Trend is currently set to down
+	    if($DB_Array_ref->[$row_counter+1][3]<$low){
+		$low=$DB_Array_ref->[$row_counter+1][3];
+	    }
+	    if(($DB_Array_ref->[$row_counter][1] != $DB_Array_ref->[$row_counter][3])&&
+	       ($DB_Array_ref->[$row_counter+1][1] != $DB_Array_ref->[$row_counter+1][3]))
+	    {
+		if($DB_Array_ref->[$row_counter+1][1] > $DB_Array_ref->[$row_counter][1]){
+		    if($DB_Array_ref->[$row_counter+1][3] > $DB_Array_ref->[$row_counter][3]){
+			$two_bar_trend_direction_up=1;
+			$trend_date = $DB_Array_ref->[$row_counter+1][0];
+			$low = $DB_Array_ref->[$row_counter+1][3];
+			$ticker_name = $DB_Array_ref->[$row_counter+1][4];
+			if($trend_type eq "day"){
+			    #
+			    #trend is -> two_day, up
+			    #
+			    #Update trend_indicator for UP
 			#Get type_str for indicator_type
-			my $dt = DateTime->now;    
- 			my $sql_command = "SELECT id, type_str \
+			    my $dt = DateTime->now;    
+			    my $sql_command = "SELECT id, type_str \
                                            from trend_indicator_type \
                                            where type_str='two day'";
-			my $sth_str = $dbh->prepare($sql_command);
-			$sth_str->execute or die;
-			my @row_type = $sth_str->fetchrow_array;
-			my $indicator_type=$row_type[0];
-
-			#Get trend_direction for indicator_type
- 			$sql_command = "SELECT id, type_str \
+			    my $sth_str = $dbh->prepare($sql_command);
+			    $sth_str->execute or die;
+			    my @row_type = $sth_str->fetchrow_array;
+			    my $indicator_type=$row_type[0];
+			    
+			    #Get trend_direction for indicator_type
+			    $sql_command = "SELECT id, type_str \
                                            from trend_indicator_direction \
                                            where type_str='UP'";
-			$sth_str = $dbh->prepare($sql_command);
-			$sth_str->execute or die;
-			my @row_dir = $sth_str->fetchrow_array;
-			my $indicator_direction = $row_dir[0];
-
-			$dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
-                                  trend_direction, date_trend_change, price, date_last_modified) \
-                             VALUES($ticker_name, $indicator_type, $indicator_direction, \
-                                    '$trend_date', $low,'$dt')")
-			    or die;
-
-		    }
-		    elsif($trend_type eq "week"){
-			#
-                        #trend is -> two_week, up
-			#
-                        #Update trend_indicator for UP
-			#Get type_str for indicator_type
-			my $dt = DateTime->now;    
- 			my $sql_command = "SELECT id, type_str \
+			    $sth_str = $dbh->prepare($sql_command);
+			    $sth_str->execute or die;
+			    my @row_dir = $sth_str->fetchrow_array;
+			    my $indicator_direction = $row_dir[0];
+			    
+			    $dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
+                                             trend_direction, date_trend_change, price, date_last_modified) \
+                                             VALUES($ticker_name, $indicator_type, $indicator_direction, \
+                                             '$trend_date', $low,'$dt')")
+				or die;
+			
+			}
+			elsif($trend_type eq "week"){
+			    #
+			    #trend is -> two_week, up
+			    #
+			    #Update trend_indicator for UP
+			    #Get type_str for indicator_type
+			    my $dt = DateTime->now;    
+			    my $sql_command = "SELECT id, type_str \
                                            from trend_indicator_type \
                                            where type_str='two week'";
-			my $sth_str = $dbh->prepare($sql_command);
-			$sth_str->execute or die;
-			my @row_type = $sth_str->fetchrow_array;
-			my $indicator_type=$row_type[0];
-
-			#Get trend_direction for indicator_type
- 			$sql_command = "SELECT id, type_str \
+			    my $sth_str = $dbh->prepare($sql_command);
+			    $sth_str->execute or die;
+			    my @row_type = $sth_str->fetchrow_array;
+			    my $indicator_type=$row_type[0];
+			    
+			    #Get trend_direction for indicator_type
+			    $sql_command = "SELECT id, type_str \
                                            from trend_indicator_direction \
                                            where type_str='UP'";
-			$sth_str = $dbh->prepare($sql_command);
-			$sth_str->execute or die;
-			my @row_dir = $sth_str->fetchrow_array;
-			my $indicator_direction = $row_dir[0];
-
-			$dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
+			    $sth_str = $dbh->prepare($sql_command);
+			    $sth_str->execute or die;
+			    my @row_dir = $sth_str->fetchrow_array;
+			    my $indicator_direction = $row_dir[0];
+			    
+			    $dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
                                   trend_direction, date_trend_change, price, date_last_modified) \
                              VALUES($ticker_name, $indicator_type, $indicator_direction, \
                                     '$trend_date', $low,'$dt')")
-			    or die;
-
-		    }
-		    elsif($trend_type eq "month"){
-			#
-                        #trend is -> two_month, up
-			#
-                        #Update trend_indicator for UP
-			#Get type_str for indicator_type
-			my $dt = DateTime->now;    
- 			my $sql_command = "SELECT id, type_str \
+				or die;
+			    
+			}
+			elsif($trend_type eq "month"){
+			    #
+			    #trend is -> two_month, up
+			    #
+			    #Update trend_indicator for UP
+			    #Get type_str for indicator_type
+			    my $dt = DateTime->now;    
+			    my $sql_command = "SELECT id, type_str \
                                            from trend_indicator_type \
                                            where type_str='two month'";
-			my $sth_str = $dbh->prepare($sql_command);
-			$sth_str->execute or die;
-			my @row_type = $sth_str->fetchrow_array;
-			my $indicator_type=$row_type[0];
-
-			#Get trend_direction for indicator_type
- 			$sql_command = "SELECT id, type_str \
+			    my $sth_str = $dbh->prepare($sql_command);
+			    $sth_str->execute or die;
+			    my @row_type = $sth_str->fetchrow_array;
+			    my $indicator_type=$row_type[0];
+			    
+			    #Get trend_direction for indicator_type
+			    $sql_command = "SELECT id, type_str \
                                            from trend_indicator_direction \
                                            where type_str='UP'";
-			$sth_str = $dbh->prepare($sql_command);
-			$sth_str->execute or die;
-			my @row_dir = $sth_str->fetchrow_array;
-			my $indicator_direction = $row_dir[0];
-
-			$dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
+			    $sth_str = $dbh->prepare($sql_command);
+			    $sth_str->execute or die;
+			    my @row_dir = $sth_str->fetchrow_array;
+			    my $indicator_direction = $row_dir[0];
+			    
+			    $dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
                                   trend_direction, date_trend_change, price, date_last_modified) \
                              VALUES($ticker_name, $indicator_type, $indicator_direction, \
                                     '$trend_date', $low,'$dt')")
-			    or die;
-
-
-		    }
-		    elsif($trend_type eq "year"){
-			#
-                        #trend is -> two_year, up
-			#
-                        #Update trend_indicator for UP
-			#Get type_str for indicator_type
-			my $dt = DateTime->now;    
- 			my $sql_command = "SELECT id, type_str \
+				or die;
+			    
+			    
+			}
+			elsif($trend_type eq "year"){
+			    #
+			    #trend is -> two_year, up
+			    #
+			    #Update trend_indicator for UP
+			    #Get type_str for indicator_type
+			    my $dt = DateTime->now;    
+			    my $sql_command = "SELECT id, type_str \
                                            from trend_indicator_type \
                                            where type_str='two year'";
-			my $sth_str = $dbh->prepare($sql_command);
-			$sth_str->execute or die;
-			my @row_type = $sth_str->fetchrow_array;
-			my $indicator_type=$row_type[0];
-
-			#Get trend_direction for indicator_type
- 			$sql_command = "SELECT id, type_str \
+			    my $sth_str = $dbh->prepare($sql_command);
+			    $sth_str->execute or die;
+			    my @row_type = $sth_str->fetchrow_array;
+			    my $indicator_type=$row_type[0];
+			    
+			    #Get trend_direction for indicator_type
+			    $sql_command = "SELECT id, type_str \
                                            from trend_indicator_direction \
                                            where type_str='UP'";
-			$sth_str = $dbh->prepare($sql_command);
-			$sth_str->execute or die;
-			my @row_dir = $sth_str->fetchrow_array;
-			my $indicator_direction = $row_dir[0];
-
-			$dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
+			    $sth_str = $dbh->prepare($sql_command);
+			    $sth_str->execute or die;
+			    my @row_dir = $sth_str->fetchrow_array;
+			    my $indicator_direction = $row_dir[0];
+			    
+			    $dbh->do("INSERT INTO trend_indicator(ticker_name, trend_type, \
                                   trend_direction, date_trend_change, price, date_last_modified) \
                              VALUES($ticker_name, $indicator_type, $indicator_direction, \
                                     '$trend_date', $low,'$dt')")
-			    or die;
-
+				or die;
+			}
 		    }
 		}
 	    }
 	}
-	elsif ($two_bar_trend_direction_up == 1){
+	elsif ($two_bar_trend_direction_up == 1){#Trend is currently set to up
+	    if($DB_Array_ref->[$row_counter+1][1]>$high){
+		$low=$DB_Array_ref->[$row_counter+1][1];
+	    }
+	    if(($DB_Array_ref->[$row_counter][1] != $DB_Array_ref->[$row_counter][3])&&
+	       ($DB_Array_ref->[$row_counter+1][1] != $DB_Array_ref->[$row_counter+1][3]))
+	    {
 	    if($DB_Array_ref->[$row_counter+1][1] < $DB_Array_ref->[$row_counter][1]){
 		if($DB_Array_ref->[$row_counter+1][3] < $DB_Array_ref->[$row_counter][3]){
 		    $two_bar_trend_direction_up=0;
@@ -829,6 +841,7 @@ sub TwoBarTrenIndicator{
                              VALUES($ticker_name, $indicator_type, $indicator_direction, \
                                     '$trend_date', $high,'$dt')")
 			    or die;
+		    }
 		    }
 		}
 	    }
