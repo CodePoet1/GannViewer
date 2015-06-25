@@ -9,6 +9,13 @@
 *                                                                              *
 ********************************************************************************
 
+trend indicators not working properly, trend_direction should go 1,2,1,2,1,2.... but
+sometimes goes 1,2,2,1,2,1,1.....  I have just realised my extract price sql queries,
+for example L275 in MaxMin.pl does not have date order, therefore cannot be sure the
+dates are being provided in correct order.  Need to add "order by date_price" type
+
+
+
 To Do Next:
 
 2. Amend message_log to add field "stock_ticker"
